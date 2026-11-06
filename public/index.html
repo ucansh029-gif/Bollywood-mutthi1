@@ -1,13 +1,248 @@
-🥊 BOLLYWOOD BOXING
-SUPERSTAR SHOWDOWN · ONLINE 1 VS 1
-Join the fight
-Your player name
-Player
-Choose your superstar
-Salman Khan
-CREATE PRIVATE ROOM
-— OR JOIN A FRIEND —
-Room code
-5-character code
-JOIN ROOM
-Fan-made fictional game. Superstar names and character references are used for entertainmen
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Superstar Showdown</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#10101b;color:white;font-family:Arial,sans-serif;text-align:center}
+header{padding:22px 10px;background:linear-gradient(120deg,#8b1010,#e18b16)}
+h1{margin:0;font-size:30px}
+header p{margin:7px 0 0}
+main{max-width:750px;margin:auto;padding:16px}
+.panel{background:#202033;border:1px solid #444;border-radius:15px;padding:15px;margin:14px 0}
+input,select,button{font-size:16px;padding:12px;border-radius:9px;border:0;margin:5px;max-width:100%}
+input,select{background:white;color:#111}
+button{background:#e6a126;color:#16121a;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.4}
+.players{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.player{background:#292941;border-radius:12px;padding:12px;min-width:0}
+.avatar{font-size:48px}
+.bar{height:13px;background:#555;border-radius:10px;overflow:hidden;margin:7px 0}
+.fill{height:100%;width:100%;background:#35d477;transition:width .2s}
+.charge{background:#f0a52b}
+.small{font-size:13px;color:#ccc}
+#status{color:#ffd36b;font-weight:bold;min-height:24px}
+#arena{font-size:24px;padding:16px}
+.controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.controls button{min-height:55px}
+#roomCode{font-size:26px;letter-spacing:5px;color:#ffd36b}
+.hidden{display:none}
+@media(max-width:420px){
+h1{font-size:24px}
+.players{gap:7px}
+.player{padding:8px}
+.avatar{font-size:38px}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>🥊 SUPERSTAR SHOWDOWN 🥊</h1>
+<p>THE BOLLYWOOD BOXING CHAMPIONSHIP</p>
+</header>
+<main>
+<section class="panel">
+<h2>Enter the Ring</h2>
+<input id="playerName" placeholder="Your player name" maxlength="18">
+<select id="character">
+<option value="Salman Khan">🕶️ Salman Khan</option>
+<option value="Shah Rukh Khan">👑 Shah Rukh Khan</option>
+<option value="Amitabh Bachchan">🔥 Amitabh Bachchan</option>
+</select>
+<br>
+<button onclick="createRoom()">CREATE PRIVATE ROOM</button>
+<hr>
+<input id="joinCode" placeholder="Enter room code" maxlength="6">
+<button onclick="joinRoom()">JOIN ROOM</button>
+<p class="small">Share your room code with your opponent.</p>
+</section>
+
+<section class="panel">
+<h3>YOUR ROOM CODE</h3>
+<div id="roomCode">------</div>
+<button onclick="copyCode()">COPY CODE</button>
+<p id="status">Create a room or join your friend's room.</p>
+</section>
+
+<section class="panel">
+<div class="players">
+<div class="player">
+<div class="avatar" id="avatar0">🕶️</div>
+<strong id="name0">PLAYER 1</strong>
+<p class="small" id="character0">Waiting...</p>
+HEALTH
+<div class="bar"><div class="fill" id="hp0"></div></div>
+<small id="hpText0">100 HP</small>
+<p>SUPERPOWER</p>
+<div class="bar"><div class="fill charge" id="charge0" style="width:0%"></div></div>
+<small id="chargeText0">0%</small>
+</div>
+<div class="player">
+<div class="avatar" id="avatar1">👑</div>
+<strong id="name1">PLAYER 2</strong>
+<p class="small" id="character1">Waiting...</p>
+HEALTH
+<div class="bar"><div class="fill" id="hp1"></div></div>
+<small id="hpText1">100 HP</small>
+<p>SUPERPOWER</p>
+<div class="bar"><div class="fill charge" id="charge1" style="width:0%"></div></div>
+<small id="chargeText1">0%</small>
+</div>
+</div>
+<div id="arena">🏟️ WAITING FOR FIGHTERS 🏟️</div>
+<button id="startBtn" class="hidden" onclick="startMatch()">START FIGHT</button>
+</section>
+
+<section class="panel">
+<h2>Fight Controls</h2>
+<p class="small">Join a room and wait for the match to start.</p>
+<div class="controls">
+<button onclick="action('punch')">👊 PUNCH</button>
+<button onclick="action('block')">🛡️ BLOCK</button>
+<button onclick="action('release')">✋ RELEASE BLOCK</button>
+<button onclick="action('special')">⚡ SUPERPOWER</button>
+</div>
+<p class="small">Keyboard: A = Punch, S = Block, D = Release, F = Superpower</p>
+</section>
+<p class="small">Fan-made, unofficial game. Not affiliated with the actors.</p>
+</main>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket=io();
+let mySlot=null;
+let currentCode="";
+let latestState=null;
+
+const $=id=>document.getElementById(id);
+
+function say(message){
+ $("status").textContent=message;
+}
+
+function characterEmoji(name){
+ if(name==="Salman Khan")return "🕶️";
+ if(name==="Shah Rukh Khan")return "👑";
+ return "🔥";
+}
+
+function createRoom(){
+ const name=$("playerName").value.trim();
+ if(!name)return say("Enter your name first.");
+ socket.emit("createRoom",{
+  name,
+  character:$("character").value
+ });
+}
+
+function joinRoom(){
+ const name=$("playerName").value.trim();
+ const code=$("joinCode").value.trim().toUpperCase();
+ if(!name||!code)return say("Enter your name and room code.");
+ socket.emit("joinRoom",{
+  name,
+  character:$("character").value,
+  code
+ });
+}
+
+function startMatch(){
+ socket.emit("startMatch");
+}
+
+function action(type){
+ if(mySlot===null)return say("Join a room first.");
+ if(!latestState||!latestState.started)return say("Wait for the match to start.");
+ socket.emit("action",type);
+}
+
+function copyCode(){
+ if(!currentCode)return say("Create or join a room first.");
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(currentCode)
+  .then(()=>say("Room code copied!"))
+  .catch(()=>say("Your room code is "+currentCode));
+ }else{
+  say("Your room code is "+currentCode);
+ }
+}
+
+socket.on("joined",data=>{
+ currentCode=data.code;
+ mySlot=data.slot;
+ $("roomCode").textContent=data.code;
+ say("You joined as Player "+(mySlot+1)+"!");
+});
+
+socket.on("state",state=>{
+ latestState=state;
+
+ if(state.code){
+  currentCode=state.code;
+  $("roomCode").textContent=state.code;
+ }
+
+ for(let i=0;i<2;i++){
+  const p=state.players&&state.players[i];
+  if(!p)continue;
+
+  $("name"+i).textContent=p.name||"PLAYER "+(i+1);
+  $("character"+i).textContent=p.character||"";
+  $("avatar"+i).textContent=characterEmoji(p.character);
+
+  const hp=Math.max(0,Number(p.hp)||0);
+  const charge=Math.max(0,Number(p.charge)||0);
+
+  $("hp"+i).style.width=hp+"%";
+  $("hpText"+i).textContent=hp+" HP";
+  $("charge"+i).style.width=charge+"%";
+  $("chargeText"+i).textContent=charge+"%";
+ }
+
+ const both=state.players&&state.players[0]&&state.players[1];
+
+ $("startBtn").classList.toggle(
+  "hidden",
+  !both||state.started||!!state.winner
+ );
+
+ if(state.winner){
+  $("arena").textContent="🏆 WINNER: "+state.winner+" 🏆";
+ }else if(state.started){
+  $("arena").textContent="🥊 FIGHT! FIGHT! FIGHT! 🥊";
+ }else if(both){
+  $("arena").textContent="FIGHTERS READY!";
+ }else{
+  $("arena").textContent="🏟️ WAITING FOR OPPONENT 🏟️";
+ }
+
+ if(state.message)say(state.message);
+});
+
+socket.on("notice",say);
+socket.on("errorMessage",say);
+
+socket.on("connect_error",()=>{
+ say("Connection problem. Refresh the page and try again.");
+});
+
+document.addEventListener("keydown",e=>{
+ if(e.target.tagName==="INPUT"||e.target.tagName==="SELECT")return;
+
+ const keys={
+  a:"punch",
+  s:"block",
+  d:"release",
+  f:"special"
+ };
+
+ if(keys[e.key.toLowerCase()]){
+  action(keys[e.key.toLowerCase()]);
+ }
+});
+</script>
+</body>
+</html>
