@@ -123,4 +123,6 @@ io.on("connection", socket => {
 function cleanName(value) {
   return String(value || "Player").replace(/[<>]/g, "").trim().slice(0, 18) || "Player";
 }
-server.listen(PORT, () => console.log(`Bollywood Boxing running on port ${PORT}`));
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`Bollywood Boxing running on port ${PORT}`);
+});
