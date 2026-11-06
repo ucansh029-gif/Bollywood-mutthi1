@@ -1,8 +1,18 @@
+
 {
-  "name": "bollywood-boxing-online",
+  "name": "bollywood-boxing-showdown",
   "version": "1.0.0",
-  "description": "Real-time room-based Bollywood boxing game",
+  "private": true,
+  "description": "Online Bollywood boxing multiplayer game",
   "main": "server.js",
-  "scripts": {"start": "node server.js"},
-  "dependencies": {"express": "^4.21.2", "socket.io": "^4.8.1"}
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "socket.io": "^4.8.1"
+  }
 }
