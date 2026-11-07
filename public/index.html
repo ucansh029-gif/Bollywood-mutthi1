@@ -346,83 +346,78 @@ function drawRing(){
  ctx.textAlign="center";
  ctx.fillText("SUPERSTAR SHOWDOWN",w/2,40);
 }
-
 function drawFighter(p,slot){
  const x=48+(p.x/100)*804;
  const y=78+(p.y/100)*327;
- const color=colors[p.character]||"#ca873f";
- const isAttacking=p.attacking||(Date.now()<attackingUntil&&attackSide===slot);
+
+ const isAttacking=p.attacking||
+ (Date.now()<attackingUntil&&attackSide===slot);
+
  const facing=slot===0?1:-1;
+
+ const character=(p.character||"").toLowerCase();
+
+ let fighterIndex=0;
+
+ if(character.includes("shah")||character.includes("srk")){
+   fighterIndex=1;
+ }
+ else if(character.includes("amitabh")||character.includes("big")){
+   fighterIndex=2;
+ }
 
  ctx.save();
  ctx.translate(x,y);
  ctx.scale(facing,1);
 
- // Shadow
- ctx.fillStyle="rgba(0,0,0,.35)";
- ctx.beginPath();ctx.ellipse(0,8,42,10,0,0,Math.PI*2);ctx.fill();
-
- // Legs
- ctx.strokeStyle="#17121b";
- ctx.lineWidth=17;
- ctx.lineCap="round";
+ // Fighter shadow
+ ctx.fillStyle="rgba(0,0,0,.4)";
  ctx.beginPath();
- ctx.moveTo(-12,-20);ctx.lineTo(-19,0);
- ctx.moveTo(12,-20);ctx.lineTo(22,0);
- ctx.stroke();
-
- // Body
- ctx.fillStyle=color;
- ctx.fillRect(-24,-88,48,65);
-
- // Belt
- ctx.fillStyle="#e5bd62";
- ctx.fillRect(-24,-30,48,7);
-
- // Head
- ctx.fillStyle="#d99a6c";
- ctx.beginPath();ctx.arc(0,-108,23,0,Math.PI*2);ctx.fill();
-
- // Hair
- ctx.fillStyle="#17121b";
- ctx.beginPath();ctx.arc(0,-115,23,Math.PI,Math.PI*2);ctx.fill();
-
- // Eyes
- ctx.fillStyle="#17121b";
- ctx.fillRect(7,-111,4,3);
-
- // Arms
- ctx.strokeStyle="#d99a6c";
- ctx.lineWidth=13;
- ctx.beginPath();
- ctx.moveTo(-22,-77);ctx.lineTo(-39,-52);
- ctx.stroke();
-
- ctx.beginPath();
- ctx.moveTo(22,-77);
- if(isAttacking){
-  ctx.lineTo(57,-85);
- }else{
-  ctx.lineTo(39,-53);
- }
- ctx.stroke();
-
- // Gloves
- ctx.fillStyle="#c92131";
- ctx.beginPath();
- if(isAttacking)ctx.arc(60,-85,15,0,Math.PI*2);
- else ctx.arc(39,-53,15,0,Math.PI*2);
+ ctx.ellipse(0,5,42,10,0,0,Math.PI*2);
  ctx.fill();
+
+ if(fighterImage.complete&&fighterImage.naturalWidth>0){
+
+   const sw=fighterImage.naturalWidth/3;
+   const sh=fighterImage.naturalHeight;
+
+   ctx.drawImage(
+     fighterImage,
+     fighterIndex*sw,0,sw,sh,
+     -65,-165,130,165
+   );
+
+ }else{
+   ctx.fillStyle="#d99a6c";
+   ctx.beginPath();
+   ctx.arc(0,-108,23,0,Math.PI*2);
+   ctx.fill();
+
+   ctx.fillStyle="#c92131";
+   ctx.fillRect(-25,-85,50,65);
+
+   ctx.fillStyle="white";
+   ctx.font="bold 14px Arial";
+   ctx.textAlign="center";
+   ctx.fillText("LOADING...",0,-20);
+ }
+
+ // Attack flash
+ if(isAttacking){
+   ctx.fillStyle="rgba(255,210,60,.8)";
+   ctx.beginPath();
+   ctx.arc(55,-85,22,0,Math.PI*2);
+   ctx.fill();
+ }
 
  ctx.restore();
 
  ctx.fillStyle="white";
  ctx.font="bold 16px Arial";
  ctx.textAlign="center";
- ctx.fillText(p.name,x,y+35);
-}
+ ctx.fillText(p.name,x,y+25);
+  }
 
-function render(){
  drawRing();
  if(gameState&&gameState.players){
   gameState.players.forEach((p,i)=>drawFighter(p,i));
