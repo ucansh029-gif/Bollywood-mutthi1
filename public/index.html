@@ -111,7 +111,8 @@ button:active{transform:scale(.96)}
 "use strict";
 
 const $ = id => document.getElementById(id);
-const socket = io({
+const socket = io(window.location.origin, {
+  transports: ["polling", "websocket"],
   reconnection: true,
   reconnectionAttempts: Infinity,
   timeout: 20000
