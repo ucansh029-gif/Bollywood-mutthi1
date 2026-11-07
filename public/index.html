@@ -213,7 +213,8 @@ const ctx = canvas.getContext("2d");
 
 const fighterImage = new Image();
 fighterImage.src = "/characters/fighters.png";
-
+const arenaImage = new Image();
+arenaImage.src = "/arena.png";
 let mySlot = null;
 let currentCode = "";
 let gameState = null;
@@ -416,22 +417,13 @@ blockBtn.addEventListener("pointerleave",e=>{
 });
 
 function drawRing(){
- const w=canvas.width;
- const h=canvas.height;
-
- const bg=ctx.createLinearGradient(0,0,0,h);
- bg.addColorStop(0,"#151d36");
- bg.addColorStop(1,"#38202b");
- ctx.fillStyle=bg;
- ctx.fillRect(0,0,w,h);
-
- ctx.fillStyle="#20283c";
- ctx.fillRect(0,0,w,90);
-
- for(let i=0;i<18;i++){
-  ctx.fillStyle=i%2?"#e0a72d":"#d23b4d";
-  ctx.fillRect(i*52,65,35,10);
- }
+  if(arenaImage.complete && arenaImage.naturalWidth > 0){
+    ctx.drawImage(arenaImage, 0, 0, canvas.width, canvas.height);
+  } else {
+    ctx.fillStyle = "#101526";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
 
  ctx.fillStyle="#d0a044";
  ctx.fillRect(35,105,w-70,330);
