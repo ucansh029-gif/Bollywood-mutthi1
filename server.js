@@ -10,7 +10,7 @@ const io = new Server(server, {
     origin: "*",
     methods: ["GET", "POST"]
   },
-  transports: ["websocket", "polling"]
+  transports: ["polling", "websocket"]
 });
 
 app.use(express.static("public"));
