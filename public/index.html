@@ -177,7 +177,7 @@ const colors={
 };
 
 function say(text){$("status").textContent=text;}
-
+window.createRoom = createRoom;
 function createRoom(){
  alert("CREATE ROOM FUNCTION RUNNING");
  const name=$("playerName").value.trim();
