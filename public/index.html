@@ -180,6 +180,7 @@ const colors={
 function say(text){$("status").textContent=text;}
 
 function createRoom(){
+ alert("CREATE ROOM FUNCTION RUNNING");
  const name=$("playerName").value.trim();
  if(!name)return say("Enter your name first!");
  socket.emit("createRoom",{
