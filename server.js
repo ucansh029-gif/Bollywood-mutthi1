@@ -1,3 +1,4 @@
+
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -5,124 +6,277 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const PORT = process.env.PORT || 3000;
 
 app.use(express.static("public"));
-app.get("/health", (_req, res) => res.json({ ok: true }));
 
-const rooms = new Map();
-const characters = ["Salman Khan", "Shah Rukh Khan", "Amitabh Bachchan"];
-const stats = {
-  "Salman Khan": { power: "Bhaijaan Power", line: "MAIN AA JAAUN KYA APNI PAR?!", special: "BHAI KA DHAMAKA 💥" },
-  "Shah Rukh Khan": { power: "King Khan Power", line: "TUM LOGON KI MAA KI...!", special: "KING KHAN STORM ⚡" },
-  "Amitabh Bachchan": { power: "Big B Power", line: "AREY TERI MAA KA...!", special: "ANGRY YOUNG MAN BLAST 🔥" }
+app.get("/health", (req, res) => {
+  res.send("Superstar Showdown is running!");
+});
+
+const rooms = {};
+
+const characters = {
+  "Salman Khan": {
+    power: "Bhaijaan Power",
+    damage: 32
+  },
+  "Shah Rukh Khan": {
+    power: "King Khan Power",
+    damage: 30
+  },
+  "Amitabh Bachchan": {
+    power: "Big B Power",
+    damage: 34
+  }
 };
 
-function code() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let value;
-  do {
-    value = Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  } while (rooms.has(value));
-  return value;
+function makeCode() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
-function publicState(room) {
-  return {
-    code: room.code,
-    players: room.players.map(p => p ? {
-      name: p.name, character: p.character, hp: p.hp, charge: p.charge,
-      power: stats[p.character].power
-    } : null),
+
+function getRoom(socket) {
+  return socket.data.roomCode
+    ? rooms[socket.data.roomCode]
+    : null;
+}
+
+function sendState(code) {
+  const room = rooms[code];
+  if (!room) return;
+
+  io.to(code).emit("state", {
+    code,
+    players: room.players,
     started: room.started,
-    message: room.message,
-    winner: room.winner
+    winner: room.winner,
+    message: room.message
+  });
+}
+
+function createPlayer(socket, data, slot) {
+  const character = characters[data.character]
+    ? data.character
+    : "Salman Khan";
+
+  return {
+    id: socket.id,
+    name: String(data.name || "Player").slice(0, 18),
+    character,
+    power: characters[character].power,
+    hp: 100,
+    charge: 0,
+    x: slot === 0 ? 25 : 75,
+    y: 50,
+    blocking: false,
+    attacking: false,
+    facing: slot === 0 ? 1 : -1
   };
 }
-function broadcast(room) { io.to(room.code).emit("state", publicState(room)); }
-function say(room, message) { room.message = message; }
 
 io.on("connection", socket => {
-  socket.on("createRoom", ({ name, character }, cb) => {
-    if (!characters.includes(character)) character = characters[0];
-    const roomCode = code();
-    const room = { code: roomCode, players: [{ id: socket.id, name: cleanName(name), character, hp: 100, charge: 0 }, null], started: false, message: "Waiting for Player 2 to join...", winner: null, lastAction: [0, 0] };
-    rooms.set(roomCode, room);
-    socket.join(roomCode);
-    socket.data.room = roomCode; socket.data.slot = 0;
-    cb({ ok: true, code: roomCode, slot: 0 });
-    broadcast(room);
+  console.log("Player connected:", socket.id);
+
+  socket.on("createRoom", data => {
+    const code = makeCode();
+
+    rooms[code] = {
+      players: [],
+      started: false,
+      winner: null,
+      message: "Waiting for opponent..."
+    };
+
+    const room = rooms[code];
+
+    room.players.push(createPlayer(socket, data, 0));
+
+    socket.join(code);
+    socket.data.roomCode = code;
+    socket.data.slot = 0;
+
+    socket.emit("joined", {
+      code,
+      slot: 0
+    });
+
+    sendState(code);
   });
 
-  socket.on("joinRoom", ({ code: rawCode, name, character }, cb) => {
-    const roomCode = String(rawCode || "").trim().toUpperCase();
-    const room = rooms.get(roomCode);
-    if (!room) return cb({ ok: false, error: "Room not found. Check the code." });
-    if (room.players[1]) return cb({ ok: false, error: "This room is already full." });
-    if (!characters.includes(character)) character = characters[1];
-    room.players[1] = { id: socket.id, name: cleanName(name), character, hp: 100, charge: 0 };
-    room.started = true;
-    say(room, "Both fighters are ready! FIGHT! 🥊");
-    socket.join(roomCode);
-    socket.data.room = roomCode; socket.data.slot = 1;
-    cb({ ok: true, code: roomCode, slot: 1 });
-    broadcast(room);
-  });
+  socket.on("joinRoom", data => {
+    const code = String(data.code || "").toUpperCase();
+    const room = rooms[code];
 
-  socket.on("action", action => {
-    const room = rooms.get(socket.data.room);
-    const slot = socket.data.slot;
-    if (!room || !room.started || room.winner || !room.players[slot] || !room.players[1-slot]) return;
-    const now = Date.now();
-    if (now - room.lastAction[slot] < 260) return;
-    const me = room.players[slot], opponent = room.players[1-slot];
-    if (action === "block") {
-      me.blocking = true;
-      say(room, `${me.name} is blocking! 🛡️`);
-    } else if (action === "release") {
-      me.blocking = false;
-    } else if (action === "punch") {
-      room.lastAction[slot] = now;
-      opponent.hp = Math.max(0, opponent.hp - (opponent.blocking ? 3 : 10));
-      me.charge = Math.min(100, me.charge + 16);
-      say(room, `${me.name} lands a ${opponent.blocking ? "blocked punch" : "POWER PUNCH"}! 👊`);
-      opponent.blocking = false;
-    } else if (action === "special" && me.charge >= 100) {
-      room.lastAction[slot] = now;
-      me.charge = 0;
-      opponent.hp = Math.max(0, opponent.hp - (opponent.blocking ? 18 : 35));
-      say(room, `${stats[me.character].line} — ${stats[me.character].special}!`);
-      opponent.blocking = false;
-    } else return;
-    if (opponent.hp <= 0) {
-      room.winner = slot;
-      room.started = false;
-      say(room, `KNOCKOUT! ${me.name} wins the championship! 🏆`);
+    if (!room) {
+      socket.emit("errorMessage", "Room not found!");
+      return;
     }
-    broadcast(room);
+
+    if (room.players.length >= 2) {
+      socket.emit("errorMessage", "Room is full!");
+      return;
+    }
+
+    if (room.started) {
+      socket.emit("errorMessage", "Match already started!");
+      return;
+    }
+
+    room.players.push(createPlayer(socket, data, 1));
+    room.message = "Both fighters are ready!";
+
+    socket.join(code);
+    socket.data.roomCode = code;
+    socket.data.slot = 1;
+
+    socket.emit("joined", {
+      code,
+      slot: 1
+    });
+
+    sendState(code);
+  });
+
+  socket.on("startMatch", () => {
+    const room = getRoom(socket);
+    if (!room) return;
+
+    if (room.players.length !== 2) {
+      socket.emit("errorMessage", "Waiting for opponent!");
+      return;
+    }
+
+    room.started = true;
+    room.message = "FIGHT!";
+
+    sendState(socket.data.roomCode);
+  });
+
+  socket.on("move", direction => {
+    const room = getRoom(socket);
+    if (!room || !room.started || room.winner) return;
+
+    const player = room.players[socket.data.slot];
+    if (!player || typeof direction !== "object") return;
+
+    let dx = Number(direction.dx) || 0;
+    let dy = Number(direction.dy) || 0;
+
+    dx = Math.max(-1, Math.min(1, dx));
+    dy = Math.max(-1, Math.min(1, dy));
+
+    player.x = Math.max(5, Math.min(95, player.x + dx * 2));
+    player.y = Math.max(10, Math.min(90, player.y + dy * 2));
+
+    const opponent = room.players[1 - socket.data.slot];
+
+    if (opponent) {
+      player.facing = opponent.x >= player.x ? 1 : -1;
+    }
+
+    sendState(socket.data.roomCode);
+  });
+
+  socket.on("action", type => {
+    const room = getRoom(socket);
+    if (!room || !room.started || room.winner) return;
+
+    const slot = socket.data.slot;
+    const player = room.players[slot];
+    const opponent = room.players[1 - slot];
+
+    if (!player || !opponent) return;
+
+    if (type === "block") {
+      player.blocking = true;
+      room.message = player.name + " is blocking!";
+    }
+
+    if (type === "release") {
+      player.blocking = false;
+      room.message = player.name + " released the block.";
+    }
+
+    if (type === "punch" || type === "special") {
+      const distance = Math.hypot(
+        player.x - opponent.x,
+        player.y - opponent.y
+      );
+
+      if (type === "special" && player.charge < 100) {
+        room.message = "Superpower needs 100% charge!";
+        sendState(socket.data.roomCode);
+        return;
+      }
+
+      if (distance > 24) {
+        room.message = "Too far away! Move closer to punch.";
+        sendState(socket.data.roomCode);
+        return;
+      }
+
+      let damage = type === "special"
+        ? characters[player.character].damage
+        : 10;
+
+      if (type === "special") {
+        player.charge = 0;
+      } else {
+        player.charge = Math.min(100, player.charge + 20);
+      }
+
+      if (opponent.blocking) {
+        damage = Math.ceil(damage * 0.2);
+      }
+
+      opponent.hp = Math.max(0, opponent.hp - damage);
+
+      player.attacking = true;
+      room.message = type === "special"
+        ? player.power + " unleashed!"
+        : player.name + " landed a punch!";
+
+      if (opponent.hp <= 0) {
+        room.winner = player.name;
+        room.message = player.name + " wins the fight!";
+      }
+
+      setTimeout(() => {
+        player.attacking = false;
+        if (rooms[socket.data.roomCode]) {
+          sendState(socket.data.roomCode);
+        }
+      }, 250);
+    }
+
+    sendState(socket.data.roomCode);
   });
 
   socket.on("disconnect", () => {
-    const roomCode = socket.data.room;
-    const room = rooms.get(roomCode);
+    const code = socket.data.roomCode;
+    const room = code ? rooms[code] : null;
+
     if (!room) return;
-    const slot = socket.data.slot;
-    if (room.players[slot] && room.players[slot].id === socket.id) {
-      room.players[slot] = null;
+
+    room.players = room.players.filter(
+      player => player.id !== socket.id
+    );
+
+    if (room.players.length === 0) {
+      delete rooms[code];
+    } else {
       room.started = false;
       room.winner = null;
-      say(room, "A player disconnected. Create a new room to play again.");
-      broadcast(room);
-      setTimeout(() => {
-        const current = rooms.get(roomCode);
-        if (current && current.players.every(p => !p)) rooms.delete(roomCode);
-      }, 60000);
+      room.message = "Opponent disconnected. Waiting for another player.";
+      sendState(code);
     }
+
+    console.log("Player disconnected:", socket.id);
   });
 });
 
-function cleanName(value) {
-  return String(value || "Player").replace(/[<>]/g, "").trim().slice(0, 18) || "Player";
-}
+const PORT = process.env.PORT || 3000;
+
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Bollywood Boxing running on port ${PORT}`);
+  console.log("Superstar Showdown running on port " + PORT);
 });
+            
