@@ -155,7 +155,8 @@ const socket=io();
 const $=id=>document.getElementById(id);
 const canvas=$("game");
 const ctx=canvas.getContext("2d");
-
+const fighterImage = new Image();
+fighterImage.src = "/characters/fighters.png";
 let mySlot=null;
 let currentCode="";
 let gameState=null;
