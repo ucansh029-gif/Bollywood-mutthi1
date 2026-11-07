@@ -336,6 +336,7 @@ function drawRing() {
   }
 }
 
+
 function drawFighter(p, slot) {
   const x = 48 + (p.x / 100) * 804;
   const y = 118 + (p.y / 100) * 280;
@@ -346,39 +347,66 @@ function drawFighter(p, slot) {
   if (character.includes("shah") || character.includes("srk")) index = 1;
   else if (character.includes("amitabh") || character.includes("big")) index = 2;
 
+  const now = Date.now();
+  const attacking = p.attacking ||
+    (now < attackingUntil && mySlot === slot);
+
+  const blocking = p.blocking;
   const facing = slot === 0 ? 1 : -1;
-  const attacking = p.attacking || (Date.now() < attackingUntil && mySlot === slot);
+
+  // Smooth idle movement
+  const bob = Math.sin(now / 160 + slot) * 4;
+  const lunge = attacking ? 18 : 0;
+  const tilt = attacking ? -0.12 : blocking ? 0.08 : 0;
 
   ctx.save();
-  ctx.translate(x, y);
+  ctx.translate(x + lunge * facing, y + bob);
   ctx.scale(facing, 1);
+  ctx.rotate(tilt);
 
-  ctx.fillStyle = "rgba(0,0,0,.35)";
+  // Fighter shadow
+  ctx.fillStyle = "rgba(0,0,0,.45)";
   ctx.beginPath();
-  ctx.ellipse(0, 5, 42, 10, 0, 0, Math.PI * 2);
+  ctx.ellipse(0, 5, 45, 12, 0, 0, Math.PI * 2);
   ctx.fill();
 
+  // Fighter artwork
   if (fighterImage.complete && fighterImage.naturalWidth > 0) {
     const sw = fighterImage.naturalWidth / 3;
     const sh = fighterImage.naturalHeight;
-    ctx.drawImage(fighterImage, index * sw, 0, sw, sh, -65, -165, 130, 165);
+
+    ctx.drawImage(
+      fighterImage,
+      index * sw, 0, sw, sh,
+      -65, -165, 130, 165
+    );
   } else {
     ctx.fillStyle = "#d99a6c";
     ctx.beginPath();
     ctx.arc(0, -110, 25, 0, Math.PI * 2);
     ctx.fill();
+
     ctx.fillStyle = ["#a92d3e", "#2767a9", "#793ca0"][index];
     ctx.fillRect(-28, -85, 56, 75);
   }
 
+  // Punch animation
   if (attacking) {
-    ctx.fillStyle = "rgba(255,205,40,.75)";
+    ctx.strokeStyle = "rgba(255,220,60,.8)";
+    ctx.lineWidth = 8;
     ctx.beginPath();
-    ctx.arc(55, -85, 24, 0, Math.PI * 2);
+    ctx.moveTo(25, -85);
+    ctx.lineTo(85, -85);
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffcf35";
+    ctx.beginPath();
+    ctx.arc(85, -85, 15, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  if (p.blocking) {
+  // Blocking shield
+  if (blocking) {
     ctx.strokeStyle = "#55d8ff";
     ctx.lineWidth = 7;
     ctx.beginPath();
@@ -388,12 +416,13 @@ function drawFighter(p, slot) {
 
   ctx.restore();
 
+  // Fighter name
   ctx.fillStyle = "white";
   ctx.font = "bold 16px Arial";
   ctx.textAlign = "center";
   ctx.fillText(p.name || "FIGHTER", x, y + 25);
 }
-
+  
 function render() {
   drawRing();
 
