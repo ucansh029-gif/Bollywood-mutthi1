@@ -149,7 +149,9 @@ socket.on("connect", () => {
 socket.on("connect_error", err => {
   say("CONNECTION FAILED: " + err.message);
 });
-
+setTimeout(() => {
+  say("DEBUG: " + socket.connected + " | " + socket.io.engine?.transport?.name);
+}, 5000);
 socket.on("disconnect", () => {
   say("Disconnected. Reconnecting to server...");
 });
