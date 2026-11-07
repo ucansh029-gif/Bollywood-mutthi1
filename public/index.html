@@ -373,15 +373,25 @@ function drawFighter(p, slot) {
   ctx.fill();
 
   // Fighter artwork
-  if (fighterImage.complete && fighterImage.naturalWidth > 0) {
-    const sw = fighterImage.naturalWidth / 3;
-    const sh = fighterImage.naturalHeight;
+  if (index === 0 && salmanAnimation.complete && salmanAnimation.naturalWidth > 0) {
+  ctx.drawImage(salmanAnimation, -65, -165, 130, 165);
 
-    ctx.drawImage(
-      fighterImage,
-      index * sw, 0, sw, sh,
-      -65, -165, 130, 165
-    );
+} else if (fighterImage.complete && fighterImage.naturalWidth > 0) {
+  const sw = fighterImage.naturalWidth / 3;
+  const sh = fighterImage.naturalHeight;
+
+  ctx.drawImage(
+    fighterImage,
+    index * sw, 0, sw, sh,
+    -65, -165, 130, 165
+  );
+
+} else {
+  ctx.fillStyle = "#d99a6c";
+  ctx.beginPath();
+  ctx.arc(0, -110, 25, 0, Math.PI * 2);
+  ctx.fill();
+  }
   } else {
     ctx.fillStyle = "#d99a6c";
     ctx.beginPath();
