@@ -152,7 +152,13 @@ button:active{transform:scale(.96)}
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket=io();
-const $=id=>document.getElementById(id);
+socket.on("connect",()=>{
+ alert("SERVER CONNECTED!");
+});
+
+socket.on("connect_error",(err)=>{
+ alert("CONNECTION FAILED: "+err.message);
+});const $=id=>document.getElementById(id);
 const canvas=$("game");
 const ctx=canvas.getContext("2d");
 const fighterImage = new Image();
