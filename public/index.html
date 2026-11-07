@@ -206,6 +206,13 @@ button:active{transform:scale(.96)}
 "use strict";
 
 const socket = io();
+ socket.on("connect", () => {
+  alert("SERVER CONNECTED! 🥊");
+});
+
+socket.on("connect_error", (err) => {
+  alert("CONNECTION ERROR: " + err.message);
+});
 const $ = id => document.getElementById(id);
 
 const canvas = $("game");
