@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SUPERSTAR SHOWDOWN 3D</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#080b16;color:#fff;font-family:Arial,sans-serif;touch-action:manipulation}
+#app{height:100dvh;display:flex;flex-direction:column}header{text-align:center;padding:7px;background:linear-gradient(90deg,#101a31,#571624,#101a31);border-bottom:2px solid #d7a33c}
+h1{margin:0;color:#ffd36b;font-size:clamp(18px,4vw,29px)}header small{letter-spacing:3px;font-size:9px}
+#status{text-align:center;color:#ffd36b;font-weight:bold;font-size:12px;padding:5px;min-height:23px}
+#lobby{width:min(94%,440px);margin:10px auto;padding:18px;background:#141c2d;border:1px solid #49516a;border-radius:18px;overflow:auto}
+#lobby h2{text-align:center;color:#ffd36b}label{font-size:12px;color:#cbd4e8}input,select{width:100%;padding:13px;margin:6px 0 12px;background:#080f20;color:#fff;border:1px solid #59647c;border-radius:10px}
+button{border:1px solid #ffffff55;border-radius:13px;color:#fff;font-weight:900;padding:13px 10px;background:linear-gradient(135deg,#f0444d,#8e1422);box-shadow:0 4px 12px #0008;touch-action:manipulation}
+button:active{transform:scale(.95)}.wide{width:100%}.blue{background:linear-gradient(135deg,#247dcc,#123a70)}.green{background:linear-gradient(135deg,#19ae68,#08723e)}
+#roomInfo{text-align:center;color:#ffd36b;margin:10px}.hidden{display:none!important}
+#battle{display:none;flex:1;min-height:0;position:relative;flex-direction:column}
+#hud{z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:5px 12px;background:#0c1425}
+.hudname{font-weight:900;color:#ffd36b;font-size:13px}.hudright{text-align:right}
+.bar{height:10px;background:#394256;border-radius:20px;overflow:hidden;margin:3px 0}.hp{height:100%;width:100%;background:linear-gradient(90deg,#e32c43,#ffb347);transition:width .15s}.meter{height:100%;width:0;background:linear-gradient(90deg,#168aff,#68edff)}
+#stage{position:relative;flex:1;min-height:0;background:#070b16}#view{width:100%;height:100%;display:block}
+#joystick{position:absolute;left:16px;bottom:15px;width:125px;height:125px;border-radius:50%;background:#ffffff30;border:3px solid #ffffffaa;display:flex;align-items:center;justify-content:center;z-index:4;touch-action:none}
+#stick{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#fff,#8193b4);border:3px solid #34445c;pointer-events:none}
+#actions{position:absolute;right:12px;bottom:12px;z-index:4;display:grid;grid-template-columns:repeat(2, minmax(82px,105px));gap:7px}
+#actions button{min-height:52px;font-size:12px;padding:7px 3px}
+#kick{background:linear-gradient(135deg,#e58a28,#99410b)}#grab{background:linear-gradient(135deg,#9d6be9,#50238c)}#block{background:linear-gradient(135deg,#247dcc,#123a70)}#power{background:linear-gradient(135deg,#e3b12d,#a44c06)}
+#fullscreen{position:absolute;right:9px;top:8px;z-index:5;background:#101b30dd;padding:8px 11px;font-size:19px}
+#overlay{position:absolute;inset:0;z-index:3;display:none;align-items:center;justify-content:center;text-align:center;font-size:clamp(28px,7vw,65px);font-weight:1000;color:#ffe17c;text-shadow:0 5px 18px #000;pointer-events:none}
+@media(orientation:landscape) and (max-height:500px){header{display:none}#status{min-height:14px;padding:1px;font-size:9px}#hud{padding:2px 10px}.bar{height:7px}#joystick{width:104px;height:104px;left:9px;bottom:8px}#stick{width:45px;height:45px}#actions{right:8px;bottom:8px;grid-template-columns:repeat(2,88px);gap:5px}#actions button{min-height:43px;font-size:10px}#fullscreen{top:3px;right:4px}}
+</style>
+</head>
+<body>
+<div id="app">
+<header><h1>🥊 SUPERSTAR SHOWDOWN 3D 🥊</h1><small>THE BOLLYWOOD FIGHTING CHAMPIONSHIP</small></header>
+<div id="status">CONNECTING TO ARENA...</div>
+<section id="lobby">
+<h2>🔥 ENTER THE ARENA 🔥</h2>
+<label>FIGHTER NAME</label><input id="playerName" maxlength="16" placeholder="Your name">
+<label>CHOOSE YOUR SUPERSTAR</label>
+<select id="character"><option>Salman Khan</option><option>Shah Rukh Khan</option><option>Amitabh Bachchan</option></select>
+<button class="wide" onclick="createRoom()">CREATE ROOM</button>
+<p style="text-align:center;color:#8f9bb1">— OR JOIN A FRIEND —</p>
+<label>ROOM CODE</label><input id="joinCode" maxlength="8" placeholder="ROOM CODE">
+<button class="wide blue" onclick="joinRoom()">JOIN ROOM</button>
+<div id="roomInfo"></div><button id="copy" class="wide blue hidden" onclick="copyCode()">COPY ROOM CODE</button>
+<button id="start" class="wide green hidden" onclick="startMatch()">START FIGHT</button>
+<p style="font-size:11px;color:#9ba8c0;line-height:1.5">3D arcade prototype. Use landscape mode for the best experience.</p>
+</section>
+<section id="battle">
+<div id="hud">
+<div><div class="hudname" id="name0">PLAYER 1</div><div class="bar"><div class="hp" id="hp0"></div></div><small id="hpv0">100 HP</small><div class="bar"><div class="meter" id="meter0"></div></div><small id="mv0">SUPER 0%</small></div>
+<div class="hudright"><div class="hudname" id="name1">PLAYER 2</div><div class="bar"><div class="hp" id="hp1"></div></div><small id="hpv1">100 HP</small><div class="bar"><div class="meter" id="meter1"></div></div><small id="mv1">SUPER 0%</small></div>
+</div>
+<div id="stage">
+<canvas id="view"></canvas>
+<button id="fullscreen" onclick="fullScreen()">⛶</button>
+<div id="overlay"></div>
+<div id="joystick"><div id="stick"></div></div>
+<div id="actions">
+<button onclick="act('punch')">👊 PUNCH</button><button id="kick" onclick="act('kick')">🦵 KICK</button>
+<button id="block" onclick="blockDown()" onpointerup="blockUp()" onpointercancel="blockUp()">🛡 BLOCK</button><button id="grab" onclick="act('grab')">🤼 GRAB</button>
+<button id="power" style="grid-column:span 2" onclick="act('special')">⚡ SUPERPOWER</button>
+</div>
+</div>
+</section>
+</div>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+const $=id=>document.getElementById(id);
+const socket=io({transports:["polling"],reconnection:true,timeout:20000});
+let connected=false,roomCode="",mySlot=0,state=null,lastWinner=null;
+const sounds={punch:new Audio("/punch.mp3"),defeat:new Audio("/defeat.mp3"),salman:new Audio("/le-re-lund-ke.mp3"),shah:new Audio("/shahrukh-khan-call.mp3"),amitabh:new Audio("/ma-ka-bhosda-aag.mp3")};
+Object.values(sounds).forEach(a=>a.preload="auto");
+let audioReady=false;
+function unlockAudio(){if(audioReady)return;audioReady=true;Object.values(sounds).forEach(a=>{a.muted=true;const p=a.play();if(p)p.then(()=>{a.pause();a.currentTime=0;a.muted=false}).catch(()=>a.muted=false);else a.muted=false})}
+function sound(k){const a=sounds[k];if(!a)return;const b=a.cloneNode();b.volume=1;b.play().catch(()=>{})}
+socket.on("connect",()=>{connected=true;status("CONNECTED — READY TO FIGHT")});
+socket.on("disconnect",()=>{connected=false;status("RECONNECTING...")});
+socket.on("connect_error",e=>status("CONNECTION ERROR: "+e.message));
+socket.on("joined",d=>{roomCode=d.code;mySlot=d.slot;$("roomInfo").textContent="ROOM CODE: "+roomCode;$("copy").classList.remove("hidden");$("start").classList.remove("hidden");status("ROOM READY — SHARE THE CODE")});
+socket.on("errorMessage",status);
+socket.on("state",s=>{state=s;if(s.started){$("lobby").classList.add("hidden");$("battle").style.display="flex"}updateHud(s);if(s.message)status(s.message);if(s.winner){$("overlay").style.display="flex";$("overlay").textContent=s.winner+" WINS!";if(lastWinner!==s.winner){sound("defeat");lastWinner=s.winner}}else{$("overlay").style.display="none";lastWinner=null}});
+socket.on("combatEvent",e=>{if(e.type==="punch"||e.type==="kick"||e.type==="grab")sound("punch");if(e.type==="special"){const k=e.character==="Salman Khan"?"salman":e.character==="Shah Rukh Khan"?"shah":"amitabh";sound(k);spawnBurst(e.slot,0xffcf42,true)}spawnBurst(e.slot,e.type==="special"?0xffb52e:0x67dfff,e.type==="special")});
+function status(t){$("status").textContent=t}
+function data(){return {name:$("playerName").value.trim(),character:$("character").value}}
+window.createRoom=()=>{unlockAudio();fullScreen();if(!data().name)return status("ENTER YOUR NAME");socket.emit("createRoom",data());status("CREATING ROOM...")};
+window.joinRoom=()=>{unlockAudio();fullScreen();if(!data().name)return status("ENTER YOUR NAME");socket.emit("joinRoom",{...data(),code:$("joinCode").value.trim().toUpperCase()});status("JOINING...")};
+window.startMatch=()=>{unlockAudio();socket.emit("startMatch")};
+window.copyCode=()=>navigator.clipboard?.writeText(roomCode).then(()=>status("ROOM CODE COPIED")).catch(()=>status("ROOM CODE: "+roomCode));
+window.fullScreen=async()=>{try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();if(screen.orientation?.lock)await screen.orientation.lock("landscape")}catch(e){}};
+window.act=t=>{unlockAudio();if(connected)socket.emit("action",t)};
+window.blockDown=()=>{unlockAudio();socket.emit("action","block")};
+window.blockUp=()=>socket.emit("action","release");
+function updateHud(s){(s.players||[]).forEach((p,i)=>{if(i>1)return;const hp=Math.max(0,p.hp??100),m=Math.min(100,p.charge||0);$("name"+i).textContent=p.name+" · "+p.character;$("hp"+i).style.width=hp+"%";$("hpv"+i).textContent=hp+" HP";$("meter"+i).style.width=m+"%";$("mv"+i).textContent="SUPER "+m+"%"})}
+
+/* THREE.JS ARENA */
+const canvas=$("view");
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x080d1c);scene.fog=new THREE.Fog(0x080d1c,18,38);
+const camera=new THREE.PerspectiveCamera(34,1,.1,100);camera.position.set(0,5.1,20);camera.lookAt(0,2.2,0);
+scene.add(new THREE.HemisphereLight(0x9dbbff,0x301323,2.1));
+const key=new THREE.DirectionalLight(0xffe0b0,3.2);key.position.set(-5,10,8);key.castShadow=true;scene.add(key);
+const rim=new THREE.PointLight(0x247dff,38,22);rim.position.set(6,5,-3);scene.add(rim);
+const red=new THREE.PointLight(0xff244f,32,22);red.position.set(-7,4,-2);scene.add(red);
+function mat(color,rough=.65,metal=0){return new THREE.MeshStandardMaterial({color,roughness:rough,metalness:metal})}
+const floor=new THREE.Mesh(new THREE.BoxGeometry(22,.4,12),mat(0x172238,.8));floor.position.y=-.25;floor.receiveShadow=true;scene.add(floor);
+const ring=new THREE.Mesh(new THREE.BoxGeometry(13,.06,7),mat(0x263c59,.45));ring.position.y=.01;scene.add(ring);
+const edgeMat=mat(0xd8a53c,.3,.65);
+for(const z of [-3.5,3.5]){const rail=new THREE.Mesh(new THREE.BoxGeometry(13,.12,.12),edgeMat);rail.position.set(0,.75,z);scene.add(rail);const rail2=rail.clone();rail2.position.y=1.55;scene.add(rail2)}
+for(const x of [-6.5,6.5])for(const z of [-3.5,3.5]){const post=new THREE.Mesh(new THREE.CylinderGeometry(.09,.12,2.2,12),edgeMat);post.position.set(x,1,z);scene.add(post)}
+for(let i=0;i<12;i++){const beam=new THREE.Mesh(new THREE.CylinderGeometry(.025,.12,8,8),new THREE.MeshBasicMaterial({color:i%2?0x286dff:0xff3455,transparent:true,opacity:.14}));beam.position.set((i-5.5)*1.5,4,-5);beam.rotation.z=(i-5.5)*-.08;scene.add(beam)}
+const wall=new THREE.Mesh(new THREE.PlaneGeometry(28,9),new THREE.MeshBasicMaterial({color:0x10182b}));wall.position.set(0,4,-6);scene.add(wall);
+for(let i=0;i<9;i++){const light=new THREE.PointLight(i%2?0x277aff:0xff284d,17,10);light.position.set((i-4)*2.7,5,-3);scene.add(light)}
+
+function makeFighter(character,slot){
+ const group=new THREE.Group();scene.add(group);
+ const colors=character==="Salman Khan"?{suit:0x202b3a,skin:0xb97952,hair:0x17120f,accent:0xc92b38}:character==="Shah Rukh Khan"?{suit:0x151a27,skin:0xb97854,hair:0x171018,accent:0x2785ce}:{suit:0x343744,skin:0xc18b69,hair:0xaaa9a5,accent:0xd1a23d};
+ const skin=mat(colors.skin),suit=mat(colors.suit),hair=mat(colors.hair),accent=mat(colors.accent,.35,.25),glove=mat(slot===0?0xc72d3b:0x246ed1,.35,.15);
+ function ball(parent,m,x,y,z,sx,sy,sz){const o=new THREE.Mesh(new THREE.SphereGeometry(1,18,14),m);o.position.set(x,y,z);o.scale.set(sx,sy,sz);o.castShadow=true;parent.add(o);return o}
+ function limb(parent,m,a,b,r1,r2){const A=new THREE.Vector3(...a),B=new THREE.Vector3(...b),d=B.clone().sub(A);const o=new THREE.Mesh(new THREE.CylinderGeometry(r2,r1,d.length(),12),m);o.position.copy(A.add(B).multiplyScalar(.5));o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());o.castShadow=true;parent.add(o);return o}
+ const torso=new THREE.Group();torso.position.y=1.45;group.add(torso);
+ ball(torso,suit,0,0,0,.53,.68,.3);
+ ball(torso,accent,0,.22,.305,.38,.12,.035);
+ ball(torso,skin,0,.88,0,.34,.4,.31);
+ ball(torso,hair,0,1.12,-.01,.36,.2,.33);
+ // nose, brows, eyes on front (-z)
+ ball(torso,skin,0,.85,-.302,.07,.09,.08);
+ for(const ex of [-.13,.13]){ball(torso,mat(0xf5e8d5),ex,.94,-.275,.055,.04,.025);ball(torso,mat(0x171717),ex,.94,-.302,.023,.027,.018)}
+ // arms with shoulder and gloves
+ const arms=[];
+ for(const side of [-1,1]){
+  const arm=new THREE.Group();arm.position.set(side*.48,.4,0);torso.add(arm);
+  ball(arm,suit,0,0,0,.19,.22,.2);
+  limb(arm,suit,[0,-.05,0],[side*.13,-.48,-.04],.14,.11);
+  limb(arm,skin,[side*.13,-.48,-.04],[side*.18,-.78,-.12],.105,.085);
+  const fist=ball(arm,glove,side*.18,-.83,-.15,.17,.15,.16);
+  arms.push({arm,fist,side});
+ }
+ const legs=[];
+ for(const side of [-1,1]){
+  const leg=new THREE.Group();leg.position.set(side*.22,.88,0);group.add(leg);
+  limb(leg,suit,[0,0,0],[side*.04,-.48,0],.19,.14);
+  limb(leg,suit,[side*.04,-.48,0],[side*.08,-.85,-.05],.14,.12);
+  ball(leg,glove,side*.08,-.88,-.12,.2,.11,.3);
+  legs.push(leg);
+ }
+ group.userData={torso,arms,legs,character,slot,baseY:0,phase:0};
+ group.scale.setScalar(1.02);
+ return group;
+}
+const fighters=[null,null],fighterData=[null,null],targetX=[-3.4,3.4],effects=[];
+function syncFighters(){if(!state?.players)return;state.players.forEach((p,i)=>{if(i>1)return;if(!fighters[i]||fighterData[i]!==p.character){if(fighters[i])scene.remove(fighters[i]);fighters[i]=makeFighter(p.character,i);fighterData[i]=p.character}targetX[i]=p.x??(i?3.4:-3.4)})}
+function spawnBurst(slot,color,big=false){const x=targetX[slot]||0;for(let i=0;i<(big?28:12);i++){const m=new THREE.Mesh(new THREE.SphereGeometry(big?.09:.055,8,6),new THREE.MeshBasicMaterial({color,transparent:true}));m.position.set(x+(Math.random()-.5)*.6,1.5+Math.random()*1.8,(Math.random()-.5)*1.3);scene.add(m);effects.push({mesh:m,life:1,v:new THREE.Vector3((Math.random()-.5)*(big?5:3),Math.random()*(big?5:3), (Math.random()-.5)*2)})}}
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+window.addEventListener("resize",resize);new ResizeObserver(resize).observe($("stage"));resize();
+let last=performance.now();
+function animate(now){requestAnimationFrame(animate);const dt=Math.min(.04,(now-last)/1000);last=now;
+ syncFighters();
+ fighters.forEach((f,i)=>{if(!f)return;const p=state?.players?.[i]||{};f.position.x+=(targetX[i]-f.position.x)*Math.min(1,dt*12);const enemy=state?.players?.[1-i];const face=enemy?(enemy.x>=p.x?1:-1):(i===0?1:-1);f.rotation.y=face===1?0:Math.PI;
+ const u=f.userData;u.phase+=dt*9;
+ let jump=0;if(p.jumping&&p.jumpStartedAt){const t=Math.min(1,(Date.now()-p.jumpStartedAt)/720);jump=Math.sin(t*Math.PI)*1.35}
+ f.position.y=jump;
+ u.torso.scale.y=p.crouching?.72:1;u.torso.position.y=p.crouching?1.12:1.45;
+ u.legs.forEach((l,j)=>{l.rotation.x=p.crouching?-.55:Math.sin(u.phase+(j*Math.PI))*((Math.abs(f.position.x-targetX[i])>.05)?-.35:.025)});
+ u.arms.forEach((a,j)=>{a.arm.rotation.x=p.attacking?-.9: p.blocking?-.65:Math.sin(u.phase+(j*Math.PI))*.04;a.arm.rotation.z=p.attacking?(j===0?-.9:.4):p.blocking?(j===0?-.25:.25):0});
+ });
+ for(let i=effects.length-1;i>=0;i--){const e=effects[i];e.life-=dt*1.5;e.mesh.position.addScaledVector(e.v,dt);e.v.y-=dt*5;e.mesh.scale.setScalar(Math.max(.01,e.life));e.mesh.material.opacity=Math.max(0,e.life);if(e.life<=0){scene.remove(e.mesh);e.mesh.geometry.dispose();e.mesh.material.dispose();effects.splice(i,1)}}
+ renderer.render(scene,camera)
+}
+requestAnimationFrame(animate);
+
+/* TOUCH JOYSTICK: horizontal movement, up jump, down crouch */
+const joy=$("joystick"),stick=$("stick");let active=false,jdx=0,jdy=0,wasUp=false;
+function joyMove(e){const r=joy.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let x=e.clientX-cx,y=e.clientY-cy;const max=r.width*.34,d=Math.hypot(x,y);if(d>max){x=x/d*max;y=y/d*max}stick.style.transform=`translate(${x}px,${y}px)`;jdx=Math.abs(x)<8?0:x/max;jdy=Math.abs(y)<8?0:y/max}
+joy.addEventListener("pointerdown",e=>{unlockAudio();active=true;joy.setPointerCapture(e.pointerId);joyMove(e)});
+joy.addEventListener("pointermove",e=>{if(active)joyMove(e)});
+function joyStop(){active=false;jdx=0;jdy=0;wasUp=false;stick.style.transform="translate(0,0)";if(connected)socket.emit("move",{dx:0,crouch:false})}
+joy.addEventListener("pointerup",joyStop);joy.addEventListener("pointercancel",joyStop);
+setInterval(()=>{if(!active||!connected)return;const up=jdy<-.4;socket.emit("move",{dx:jdx,jump:up&&!wasUp,crouch:jdy>.4});wasUp=up},50);
+const keys={};window.addEventListener("keydown",e=>{const k=e.key.toLowerCase();if(keys[k])return;keys[k]=true;if(k==="j")act("punch");if(k==="k")blockDown();if(k==="l")act("kick");if(k==="i")act("special");if(k==="u")act("grab")});
+window.addEventListener("keyup",e=>{const k=e.key.toLowerCase();keys[k]=false;if(k==="k")blockUp()});
+setInterval(()=>{if(!connected)return;const dx=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);const up=!!(keys.w||keys.arrowup),down=!!(keys.s||keys.arrowdown);if(dx||up||down)socket.emit("move",{dx,jump:up,crouch:down})},50);
+</script>
+</body>
+</html>
