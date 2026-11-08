@@ -107,14 +107,7 @@ button:active{transform:scale(.96)}
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
-<script><script>
-window.addEventListener("error", function(e) {
-  const s = document.getElementById("status");
-  if (s) {
-    s.textContent = "JAVASCRIPT ERROR: " + e.message + " LINE: " + e.lineno;
-  }
-});
-</script>
+<script>
 "use strict";
 
 const $ = id => document.getElementById(id);
