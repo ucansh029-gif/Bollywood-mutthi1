@@ -88,8 +88,13 @@ header{
  position:relative;flex:1;min-height:0;background:#080d18;
  display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-#game{display:block;width:100%;height:100%;object-fit:contain}
-#message{
+#game{
+ display:block;
+ width:100%;
+ height:100%;
+ object-fit:fill;
+}
+ #message{
  position:absolute;top:12%;left:50%;transform:translateX(-50%);
  color:#ffdf76;font-weight:1000;font-size:clamp(17px,4vw,34px);
  text-shadow:0 3px 10px #000;pointer-events:none;text-align:center;
