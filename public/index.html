@@ -143,6 +143,7 @@ function say(message) {
 }
 
 socket.on("connect", () => {
+ console.log("SOCKET CONNECTED", socket.id); 
   say("SERVER CONNECTED! Create or join a room.");
 });
 
