@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: "*",
@@ -75,7 +76,8 @@ function createPlayer(socket, data, slot) {
     y: 50,
     blocking: false,
     attacking: false,
-    facing: slot === 0 ? 1 : -1
+    facing: slot === 0 ? 1 : -1,
+    lastAttackAt: 0
   };
 }
 
@@ -94,21 +96,19 @@ io.on("connection", socket => {
 
     const room = rooms[code];
 
-    room.players.push(createPlayer(socket, data, 0));
+    room.players.push(createPlayer(socket, data || {}, 0));
 
     socket.join(code);
     socket.data.roomCode = code;
     socket.data.slot = 0;
 
-    socket.emit("joined", {
-      code,
-      slot: 0
-    });
-
+    socket.emit("joined", { code, slot: 0 });
     sendState(code);
   });
 
   socket.on("joinRoom", data => {
+    data = data || {};
+
     const code = String(data.code || "").toUpperCase();
     const room = rooms[code];
 
@@ -134,11 +134,7 @@ io.on("connection", socket => {
     socket.data.roomCode = code;
     socket.data.slot = 1;
 
-    socket.emit("joined", {
-      code,
-      slot: 1
-    });
-
+    socket.emit("joined", { code, slot: 1 });
     sendState(code);
   });
 
@@ -151,7 +147,10 @@ io.on("connection", socket => {
       return;
     }
 
+    if (room.started) return;
+
     room.started = true;
+    room.winner = null;
     room.message = "FIGHT!";
 
     sendState(socket.data.roomCode);
@@ -159,10 +158,11 @@ io.on("connection", socket => {
 
   socket.on("move", direction => {
     const room = getRoom(socket);
+
     if (!room || !room.started || room.winner) return;
 
     const player = room.players[socket.data.slot];
-    if (!player || typeof direction !== "object") return;
+    if (!player || !direction || typeof direction !== "object") return;
 
     let dx = Number(direction.dx) || 0;
     let dy = Number(direction.dy) || 0;
@@ -170,8 +170,19 @@ io.on("connection", socket => {
     dx = Math.max(-1, Math.min(1, dx));
     dy = Math.max(-1, Math.min(1, dy));
 
-    player.x = Math.max(5, Math.min(95, player.x + dx * 2));
-    player.y = Math.max(10, Math.min(90, player.y + dy * 2));
+    // Normalize diagonal movement
+    const length = Math.hypot(dx, dy);
+
+    if (length > 1) {
+      dx /= length;
+      dy /= length;
+    }
+
+    // Faster movement
+    const speed = 3.2;
+
+    player.x = Math.max(5, Math.min(95, player.x + dx * speed));
+    player.y = Math.max(10, Math.min(90, player.y + dy * speed));
 
     const opponent = room.players[1 - socket.data.slot];
 
@@ -184,6 +195,7 @@ io.on("connection", socket => {
 
   socket.on("action", type => {
     const room = getRoom(socket);
+
     if (!room || !room.started || room.winner) return;
 
     const slot = socket.data.slot;
@@ -195,66 +207,86 @@ io.on("connection", socket => {
     if (type === "block") {
       player.blocking = true;
       room.message = player.name + " is blocking!";
+      sendState(socket.data.roomCode);
+      return;
     }
 
     if (type === "release") {
       player.blocking = false;
       room.message = player.name + " released the block.";
+      sendState(socket.data.roomCode);
+      return;
     }
 
-    if (type === "punch" || type === "special") {
-      const distance = Math.hypot(
-        player.x - opponent.x,
-        player.y - opponent.y
-      );
+    if (type !== "punch" && type !== "special") return;
 
-      if (type === "special" && player.charge < 100) {
-        room.message = "Superpower needs 100% charge!";
-        sendState(socket.data.roomCode);
-        return;
-      }
+    const now = Date.now();
 
-      if (distance > 24) {
-        room.message = "Too far away! Move closer to punch.";
-        sendState(socket.data.roomCode);
-        return;
-      }
+    // Attack cooldown
+    if (now - player.lastAttackAt < 400) return;
 
-      let damage = type === "special"
-        ? characters[player.character].damage
-        : 10;
+    const distance = Math.hypot(
+      player.x - opponent.x,
+      player.y - opponent.y
+    );
 
-      if (type === "special") {
-        player.charge = 0;
-      } else {
-        player.charge = Math.min(100, player.charge + 20);
-      }
+    if (type === "special" && player.charge < 100) {
+      room.message = "Superpower needs 100% charge!";
+      sendState(socket.data.roomCode);
+      return;
+    }
 
-      if (opponent.blocking) {
-        damage = Math.ceil(damage * 0.2);
-      }
+    if (distance > 24) {
+      room.message = "Too far away! Move closer to punch.";
+      sendState(socket.data.roomCode);
+      return;
+    }
 
-      opponent.hp = Math.max(0, opponent.hp - damage);
+    player.lastAttackAt = now;
 
-      player.attacking = true;
-      room.message = type === "special"
-        ? player.power + " unleashed!"
-        : player.name + " landed a punch!";
+    let damage = type === "special"
+      ? characters[player.character].damage
+      : 10;
 
-      if (opponent.hp <= 0) {
-        room.winner = player.name;
-        room.message = player.name + " wins the fight!";
-      }
+    if (type === "special") {
+      player.charge = 0;
+    } else {
+      player.charge = Math.min(100, player.charge + 20);
+    }
 
-      setTimeout(() => {
-        player.attacking = false;
-        if (rooms[socket.data.roomCode]) {
-          sendState(socket.data.roomCode);
-        }
-      }, 250);
+    if (opponent.blocking) {
+      damage = Math.ceil(damage * 0.2);
+    }
+
+    opponent.hp = Math.max(0, opponent.hp - damage);
+
+    player.attacking = true;
+
+    room.message = type === "special"
+      ? player.power + " unleashed!"
+      : player.name + " landed a punch!";
+
+    // Tell both players to play the correct sound
+    io.to(socket.data.roomCode).emit("combatEvent", {
+      slot,
+      type,
+      character: player.character
+    });
+
+    if (opponent.hp <= 0) {
+      room.winner = player.name;
+      room.message = player.name + " wins the fight!";
     }
 
     sendState(socket.data.roomCode);
+
+    setTimeout(() => {
+      player.attacking = false;
+
+      if (rooms[socket.data.roomCode]) {
+        sendState(socket.data.roomCode);
+      }
+    }, 250);
   });
 
   socket.on("disconnect", () => {
@@ -285,4 +317,3 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, "0.0.0.0", () => {
   console.log("Superstar Showdown running on port " + PORT);
 });
-            
