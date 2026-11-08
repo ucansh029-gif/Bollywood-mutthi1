@@ -143,18 +143,18 @@ function say(message) {
 }
 
 socket.on("connect", () => {
- console.log("SOCKET CONNECTED", socket.id); 
   say("SERVER CONNECTED! Create or join a room.");
+  console.log("SOCKET CONNECTED", socket.id);
 });
 
 socket.on("connect_error", err => {
   say("CONNECTION FAILED: " + err.message);
+  console.log("SOCKET ERROR", err);
 });
-setTimeout(() => {
-  say("DEBUG: " + socket.connected + " | " + socket.io.engine?.transport?.name);
-}, 5000);
-socket.on("disconnect", () => {
-  say("Disconnected. Reconnecting to server...");
+
+socket.on("disconnect", reason => {
+  say("Disconnected: " + reason);
+  console.log("SOCKET DISCONNECTED", reason);
 });
 
 socket.on("joined", data => {
