@@ -283,11 +283,23 @@ function updateHUD(){
  if(gameState.started)$("roundInfo").textContent=gameState.winner?"MATCH OVER":"FIGHT!";
  else $("roundInfo").textContent="WAITING";
 }
+function enterGameMode(){
+  const el = document.documentElement;
 
-$("createBtn").onclick=createRoom;
-$("joinBtn").onclick=joinRoom;
-$("startBtn").onclick=startMatch;
-$("fightBtn").onclick=startMatch;
+  if (!document.fullscreenElement && el.requestFullscreen) {
+    el.requestFullscreen().then(() => {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock("landscape").catch(()=>{});
+      }
+    }).catch(()=>{});
+  } else if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("landscape").catch(()=>{});
+  }
+ }
+$("createBtn").onclick=()=>{enterGameMode();createRoom()};
+$("joinBtn").onclick=()=>{enterGameMode();joinRoom()};
+$("startBtn").onclick=()=>{enterGameMode();startMatch()};
+$("fightBtn").onclick=()=>{enterGameMode();startMatch()};
 $("copyBtn").onclick=copyCode;
 $("punchBtn").onclick=()=>action("punch");
 $("specialBtn").onclick=()=>action("special");
