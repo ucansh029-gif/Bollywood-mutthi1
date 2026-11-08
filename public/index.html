@@ -334,52 +334,37 @@ const canvas = $("game");
 const ctx = canvas.getContext("2d");
 
 function drawFighter(p,index){
- const x = Number(p.x ?? (index===0 ? 300 : 660));
- const y = Number(p.y ?? 400);
- const facing = p.facing || (index===0 ? 1 : -1);
+ const x = 48 + (Number(p.x ?? (index===0?25:75))/100)*804;
+ const y = 118 + (Number(p.y ?? 50)/100)*280;
+ const facing = p.facing || (index===0?1:-1);
+
  const character = p.character || "";
- let spriteIndex = character.includes("Shah") ? 1 : character.includes("Amitabh") ? 2 : 0;
+ const spriteIndex = character.includes("Shah") ? 1 :
+                     character.includes("Amitabh") ? 2 : 0;
 
  ctx.save();
  ctx.translate(x,y);
  ctx.scale(facing,1);
 
- if(fighterImage.complete && fighterImage.naturalWidth > 0){
-  const sw = fighterImage.naturalWidth/3;
-  const sh = fighterImage.naturalHeight;
+ if(fighterImage.complete && fighterImage.naturalWidth>0){
+  const sw=fighterImage.naturalWidth/3;
+  const sh=fighterImage.naturalHeight;
+
   ctx.drawImage(
    fighterImage,
    spriteIndex*sw,0,sw,sh,
    -65,-165,130,165
   );
  }else{
-  ctx.fillStyle = index===0 ? "#d92d3a" : "#277bd6";
+  ctx.fillStyle=index===0?"#d92d3a":"#277bd6";
   ctx.fillRect(-35,-115,70,115);
   ctx.beginPath();
   ctx.arc(0,-135,28,0,Math.PI*2);
   ctx.fill();
  }
 
- if(p.blocking){
-  ctx.strokeStyle="#39c9ff";
-  ctx.lineWidth=8;
-  ctx.beginPath();
-  ctx.arc(0,-80,75,-1.4,1.4);
-  ctx.stroke();
- }
-
- if(p.attacking){
-  ctx.strokeStyle="#ffdc62";
-  ctx.lineWidth=12;
-  ctx.beginPath();
-  ctx.moveTo(25,-90);
-  ctx.lineTo(100,-105);
-  ctx.stroke();
- }
-
  ctx.restore();
 }
-
 function draw(){
  ctx.clearRect(0,0,canvas.width,canvas.height);
 
