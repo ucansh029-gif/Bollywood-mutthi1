@@ -1,410 +1,472 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>SUPERSTAR SHOWDOWN</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080b16;color:white;font-family:Arial;text-align:center}
-header{padding:14px;background:linear-gradient(90deg,#741322,#17152d,#123b68)}
-h1{font-size:clamp(23px,5vw,36px);margin:4px}
-.subtitle{color:#ffd76a;letter-spacing:2px;font-size:12px}
-main{max-width:1100px;margin:auto;padding:8px}
-.panel{background:#151b2c;border:1px solid #39435b;border-radius:12px;padding:12px;margin:9px 0}
-input,select,button{padding:12px;border:0;border-radius:8px;font-size:15px}
-input,select{background:#252e43;color:white;max-width:100%}
-button{background:#bd263b;color:white;font-weight:bold}
-.blue{background:#2464b5}
-.gold{background:#c58a19;color:#160d00}
-.green{background:#168b59}
-#status{color:#ffd76a;min-height:22px}
-#roomCode{font-size:25px;color:#ffdf75;letter-spacing:5px;margin:10px}
-.bars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.playerBox{background:#202a40;padding:9px;border-radius:9px}
-.bar{height:13px;background:#3a4050;border-radius:20px;overflow:hidden;margin:6px 0}
-.hp{height:100%;width:100%;background:#e63848}
-.power{height:100%;width:0;background:#ffce37}
-#game{display:block;width:100%;height:auto;background:#101526;border:2px solid #d7a83e;border-radius:10px}
-.controls{display:flex;align-items:center;justify-content:space-between;gap:12px}
-#joystick{width:110px;height:110px;border-radius:50%;background:#25314a;border:3px solid #7788a9;position:relative;touch-action:none;flex-shrink:0}
-#stick{width:48px;height:48px;border-radius:50%;background:#d8ddeb;position:absolute;left:28px;top:28px}
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
-.actions button{min-height:52px}
-.small{font-size:12px;color:#aab5cc}
-@media(max-width:400px){
-#joystick{width:95px;height:95px}
-#stick{left:22px;top:22px}
-.actions button{font-size:12px;padding:8px}
+html,body{
+ margin:0;width:100%;height:100%;overflow:hidden;
+ background:#050711;color:white;font-family:Arial,sans-serif;
+}
+button,input,select{font:inherit}
+button{border:0;cursor:pointer;font-weight:900;color:white}
+#app{height:100dvh;width:100%;display:flex;flex-direction:column;background:#070a14}
+header{
+ height:54px;flex-shrink:0;display:flex;align-items:center;
+ justify-content:space-between;padding:0 15px;
+ background:linear-gradient(90deg,#390d1b,#111729,#092747);
+ border-bottom:1px solid #b68b39;
+}
+.logo{font-weight:1000;letter-spacing:1px;color:#ffd66b;font-size:clamp(15px,3vw,23px)}
+#status{font-size:11px;color:#b9d5c9}
+#lobby{
+ position:absolute;z-index:10;top:65px;left:50%;transform:translateX(-50%);
+ width:min(95%,430px);padding:15px;background:#111a2c;
+ border:1px solid #c69b48;border-radius:15px;
+ box-shadow:0 15px 60px #000b;text-align:center;
+}
+#lobby h2{margin:0 0 12px;color:#ffd66b}
+#lobby input,#lobby select{
+ width:100%;padding:12px;margin:5px 0;background:#26334a;
+ color:white;border:1px solid #45536d;border-radius:8px;
+}
+.lobbyBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.lobbyBtns button,#startBtn{padding:13px;border-radius:8px;background:#bd293f}
+#joinBtn{background:#2469bb}
+#startBtn{background:#128b5c;width:100%;margin-top:9px}
+#copyBtn{background:#bd861c;color:#17100a;width:100%;margin-top:7px}
+#roomCode{color:#ffda70;font-size:23px;letter-spacing:5px;margin:8px}
+#closeLobby{background:#34425c;width:100%;margin-top:8px;padding:9px;border-radius:8px}
+#hud{
+ display:flex;justify-content:space-between;align-items:center;
+ gap:12px;padding:7px 12px;background:#0c1220;flex-shrink:0;
+}
+.fighterHud{width:43%;max-width:400px}
+.fighterName{font-size:clamp(12px,2vw,18px);font-weight:900;margin-bottom:4px}
+.healthTrack,.powerTrack{height:12px;background:#30384a;border-radius:20px;overflow:hidden}
+.healthFill{height:100%;width:100%;background:linear-gradient(90deg,#a90d2d,#ff4057);transition:width .2s}
+.powerFill{height:100%;width:0;background:linear-gradient(90deg,#e18a11,#ffe35b);transition:width .2s}
+.powerTrack{height:6px;margin-top:4px}
+#roundInfo{font-size:11px;color:#ffdc75;text-align:center;font-weight:bold}
+#arenaWrap{
+ position:relative;flex:1;min-height:0;background:#080d18;
+ display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+#game{display:block;width:100%;height:100%;object-fit:contain}
+#message{
+ position:absolute;top:12%;left:50%;transform:translateX(-50%);
+ color:#ffdf76;font-weight:1000;font-size:clamp(17px,4vw,34px);
+ text-shadow:0 3px 10px #000;pointer-events:none;text-align:center;
+ white-space:nowrap;
+}
+#controls{
+ flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+ gap:12px;padding:9px 14px max(10px,env(safe-area-inset-bottom));
+ background:linear-gradient(#111a2b,#080c17);
+ border-top:1px solid #35435c;
+}
+#joystick{
+ width:clamp(76px,15vw,112px);height:clamp(76px,15vw,112px);
+ border-radius:50%;background:#25334e;border:4px solid #788bab;
+ position:relative;touch-action:none;flex-shrink:0;
+ box-shadow:inset 0 0 18px #0008;
+}
+#stick{
+ position:absolute;width:42%;height:42%;left:29%;top:29%;
+ border-radius:50%;background:#e3e8f5;
+ box-shadow:0 3px 10px #0009;
+}
+.actionGrid{
+ display:grid;grid-template-columns:1fr 1fr;gap:7px;
+ width:min(65%,390px);
+}
+.actionGrid button{
+ min-height:clamp(43px,8vh,65px);border-radius:10px;
+ font-size:clamp(11px,2vw,16px);
+ box-shadow:inset 0 -4px #0003,0 3px 9px #0006;
+}
+#punchBtn{background:linear-gradient(#f04a54,#a80e32)}
+#blockBtn{background:linear-gradient(#368ce0,#174a91)}
+#specialBtn{background:linear-gradient(#f5bd37,#ad6a0a);color:#211300}
+#fightBtn{background:linear-gradient(#1db77c,#087348)}
+#hint{
+ position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+ color:#c2cce0;font-size:10px;white-space:nowrap;pointer-events:none;
+}
+@media(orientation:landscape){
+ header{height:42px}
+ #hud{padding:4px 15px}
+ #controls{padding:5px 15px}
+ #joystick{width:78px;height:78px}
+ .actionGrid button{min-height:40px}
+ #lobby{top:48px}
+}
+@media(max-width:480px) and (orientation:portrait){
+ #hud{gap:6px;padding:7px}
+ .fighterHud{width:42%}
+ #controls{gap:8px;padding-left:9px;padding-right:9px}
+ .actionGrid{width:68%;gap:5px}
 }
 </style>
 </head>
+
 <body>
+<div id="app">
 
 <header>
-<h1>🥊 SUPERSTAR SHOWDOWN 🥊</h1>
-<div class="subtitle">THE BOLLYWOOD BOXING CHAMPIONSHIP</div>
+ <div class="logo">🥊 SUPERSTAR SHOWDOWN</div>
+ <div id="status">CONNECTING...</div>
+ <button id="menuBtn" style="background:#293650;padding:8px 12px;border-radius:7px">MENU</button>
 </header>
 
-<main>
-<section class="panel">
-<input id="playerName" placeholder="Enter your name" maxlength="16">
-<br><br>
-<select id="character">
-<option>Salman Khan</option>
-<option>Shah Rukh Khan</option>
-<option>Amitabh Bachchan</option>
-</select>
-<button onclick="createRoom()">CREATE ROOM</button>
-<hr>
-<input id="joinCode" placeholder="Enter room code" maxlength="6">
-<button class="blue" onclick="joinRoom()">JOIN ROOM</button>
-<div class="small">Share your room code with your friend.</div>
-<div id="roomCode">------</div>
-<button class="gold" onclick="copyCode()">COPY CODE</button>
-<p id="status">Connecting to server...</p>
-<button class="green" onclick="startMatch()">🥊 START FIGHT</button>
+<section id="lobby">
+ <h2>CHOOSE YOUR FIGHTER</h2>
+ <input id="playerName" placeholder="Enter your name" maxlength="16">
+ <select id="character">
+  <option>Salman Khan</option>
+  <option>Shah Rukh Khan</option>
+  <option>Amitabh Bachchan</option>
+ </select>
+ <div class="lobbyBtns">
+  <button id="createBtn">CREATE ROOM</button>
+  <button id="joinBtn">JOIN ROOM</button>
+ </div>
+ <input id="joinCode" placeholder="ROOM CODE" maxlength="6">
+ <div id="roomCode">------</div>
+ <button id="copyBtn">COPY ROOM CODE</button>
+ <button id="startBtn">🥊 START FIGHT</button>
+ <button id="closeLobby">CLOSE MENU</button>
 </section>
 
-<section class="panel">
-<div class="bars">
-<div class="playerBox">
-<b id="name1">PLAYER 1</b>
-<div class="bar"><div class="hp" id="hp1"></div></div>
-<div class="small">HEALTH</div>
-<div class="bar"><div class="power" id="power1"></div></div>
-<div class="small">SUPERPOWER</div>
-</div>
-<div class="playerBox">
-<b id="name2">PLAYER 2</b>
-<div class="bar"><div class="hp" id="hp2"></div></div>
-<div class="small">HEALTH</div>
-<div class="bar"><div class="power" id="power2"></div></div>
-<div class="small">SUPERPOWER</div>
-</div>
-</div>
+<section id="hud">
+ <div class="fighterHud">
+  <div class="fighterName" id="name1">PLAYER 1</div>
+  <div class="healthTrack"><div class="healthFill" id="hp1"></div></div>
+  <div class="powerTrack"><div class="powerFill" id="power1"></div></div>
+ </div>
+ <div id="roundInfo">ROUND 1</div>
+ <div class="fighterHud" style="text-align:right">
+  <div class="fighterName" id="name2">PLAYER 2</div>
+  <div class="healthTrack"><div class="healthFill" id="hp2" style="margin-left:auto"></div></div>
+  <div class="powerTrack"><div class="powerFill" id="power2" style="margin-left:auto"></div></div>
+ </div>
 </section>
 
-<section class="panel">
-<canvas id="game" width="900" height="500"></canvas>
-<div class="controls">
-<div id="joystick"><div id="stick"></div></div>
-<div class="actions">
-<button onclick="doAction('punch')">👊 PUNCH</button>
-<button class="blue" id="blockBtn">🛡️ BLOCK</button>
-<button class="gold" onclick="doAction('special')">⚡ SUPERPOWER</button>
-<button class="green" onclick="startMatch()">🥊 FIGHT</button>
+<div id="arenaWrap">
+ <canvas id="game" width="1280" height="720"></canvas>
+ <div id="message">CREATE A ROOM TO PLAY</div>
+ <div id="hint">MOVE • PUNCH • BLOCK • UNLEASH YOUR POWER</div>
 </div>
-</div>
-<p class="small">Use joystick to move. Get close to your opponent to punch.</p>
+
+<section id="controls">
+ <div id="joystick"><div id="stick"></div></div>
+ <div class="actionGrid">
+  <button id="punchBtn">👊 PUNCH</button>
+  <button id="blockBtn">🛡️ BLOCK</button>
+  <button id="specialBtn">⚡ SUPERPOWER</button>
+  <button id="fightBtn">🥊 FIGHT</button>
+ </div>
 </section>
-<p class="small">Unofficial fan-made game.</p>
-</main>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
 "use strict";
+const $=id=>document.getElementById(id);
+const canvas=$("game"),ctx=canvas.getContext("2d");
 
-const $ = id => document.getElementById(id);
-const statusBox = $("status");
+let socket=null,mySlot=null,currentCode="",gameState=null;
+let joyX=0,joyY=0,joyActive=false;
+let effects=[],lastMessage="",shake=0;
+let lastTime=0,animTime=0;
+let audio=null;
 
-let socket = null;
-let mySlot = null;
-let currentCode = "";
-let gameState = null;
-let joyX = 0, joyY = 0;
-let joystickActive = false;
-let attackingUntil = 0;
-let effectText = "";
-let effectUntil = 0;
+const arena=new Image();
+arena.src="/arena.png";
+const fighters=new Image();
+fighters.src="/characters/fighters.png";
 
-function say(message) {
-  statusBox.textContent = message;
+function say(t){$("status").textContent=t}
+function message(t){$("message").textContent=t||""}
+
+function sound(freq=150,duration=.1,type="square"){
+ try{
+  audio=audio||new(window.AudioContext||window.webkitAudioContext)();
+  const o=audio.createOscillator(),g=audio.createGain();
+  o.type=type;o.frequency.value=freq;
+  g.gain.setValueAtTime(.08,audio.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+  o.connect(g);g.connect(audio.destination);
+  o.start();o.stop(audio.currentTime+duration);
+ }catch(e){}
 }
 
-if (typeof io === "undefined") {
-  say("Socket.IO script failed to load. Refresh the page.");
-} else {
-  socket = io({
-    transports: ["polling"],
-    reconnection: true,
-    reconnectionAttempts: Infinity,
-    timeout: 20000
-  });
+if(typeof io==="undefined"){
+ say("SOCKET SCRIPT ERROR");
+}else{
+ socket=io({transports:["polling"],reconnection:true,timeout:20000});
 
-  socket.on("connect", () => {
-    say("SERVER CONNECTED! Create or join a room.");
-  });
+ socket.on("connect",()=>say("● ONLINE"));
+ socket.on("connect_error",e=>say("CONNECTION ERROR"));
+ socket.on("disconnect",()=>say("● OFFLINE"));
 
-  socket.on("connect_error", err => {
-    say("CONNECTION FAILED: " + err.message);
-  });
+ socket.on("joined",d=>{
+  currentCode=d.code;mySlot=d.slot;
+  $("roomCode").textContent=d.code;
+  say("ROOM JOINED • PLAYER "+(d.slot+1));
+ });
 
-  socket.on("disconnect", reason => {
-    say("Disconnected: " + reason);
-  });
-
-  socket.on("joined", data => {
-    currentCode = data.code;
-    mySlot = data.slot;
-    $("roomCode").textContent = data.code;
-    say("Room joined! You are Player " + (mySlot + 1));
-  });
-
-  socket.on("state", state => {
-    gameState = state;
-    if (state.code) {
-      currentCode = state.code;
-      $("roomCode").textContent = state.code;
-    }
-    updateBars();
-    if (state.message) say(state.message);
-  });
-
-  socket.on("errorMessage", message => say(message));
-}
-
-function createRoom() {
-  const name = $("playerName").value.trim();
-  if (!name) return say("Enter your name first!");
-  if (!socket || !socket.connected) return say("Server not connected!");
-  socket.emit("createRoom", {
-    name,
-    character: $("character").value
-  });
-  say("Creating room...");
-}
-
-function joinRoom() {
-  const name = $("playerName").value.trim();
-  const code = $("joinCode").value.trim().toUpperCase();
-  if (!name) return say("Enter your name first!");
-  if (code.length !== 6) return say("Enter a valid room code!");
-  if (!socket || !socket.connected) return say("Server not connected!");
-  socket.emit("joinRoom", {
-    code,
-    name,
-    character: $("character").value
-  });
-  say("Joining room...");
-}
-
-function startMatch() {
-  if (!socket || !socket.connected) return say("Server not connected!");
-  socket.emit("startMatch");
-}
-
-function copyCode() {
-  if (!currentCode) return say("Create or join a room first!");
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(currentCode)
-      .then(() => say("Room code copied!"))
-      .catch(() => say("Room code: " + currentCode));
-  } else {
-    say("Room code: " + currentCode);
+ socket.on("state",s=>{
+  gameState=s;
+  if(s.code){currentCode=s.code;$("roomCode").textContent=s.code}
+  updateHUD();
+  if(s.message && s.message!==lastMessage){
+   lastMessage=s.message;message(s.message);
+   if(s.message.includes("punch")||s.message.includes("unleashed")){
+    effects.push({type:"hit",life:1});
+    shake=10;sound(100,.15);
+   }
+   if(s.winner)sound(500,.5,"sawtooth");
   }
+ });
+
+ socket.on("errorMessage",say);
 }
 
-function doAction(type) {
-  if (!socket || !socket.connected) return say("Server disconnected!");
-  if (!gameState || !gameState.started) return say("Start the fight first!");
-  socket.emit("action", type);
-  attackingUntil = Date.now() + 250;
-  effectText = type === "special" ? "⚡ SUPER POWER!" : "POW!";
-  effectUntil = Date.now() + 700;
+function playerData(){
+ const name=$("playerName").value.trim();
+ if(!name){say("ENTER YOUR NAME");return null}
+ return {name,character:$("character").value};
+}
+function createRoom(){
+ const d=playerData();if(!d)return;
+ if(!socket||!socket.connected)return say("SERVER NOT CONNECTED");
+ socket.emit("createRoom",d);say("CREATING ROOM...");
+}
+function joinRoom(){
+ const d=playerData();if(!d)return;
+ const code=$("joinCode").value.trim().toUpperCase();
+ if(code.length!==6)return say("ENTER VALID ROOM CODE");
+ if(!socket||!socket.connected)return say("SERVER NOT CONNECTED");
+ socket.emit("joinRoom",{...d,code});say("JOINING ROOM...");
+}
+function startMatch(){
+ if(!socket||!socket.connected)return say("SERVER NOT CONNECTED");
+ socket.emit("startMatch");
+}
+function action(type){
+ if(!socket||!socket.connected)return;
+ if(!gameState||!gameState.started)return say("START THE FIGHT FIRST");
+ socket.emit("action",type);
+ if(type==="punch"){effects.push({type:"swing",life:1});sound(180,.09)}
+ if(type==="special"){effects.push({type:"special",life:1});shake=18;sound(70,.45,"sawtooth")}
+}
+function copyCode(){
+ if(!currentCode)return say("CREATE A ROOM FIRST");
+ if(navigator.clipboard){
+  navigator.clipboard.writeText(currentCode).then(()=>say("CODE COPIED"));
+ }else say("ROOM CODE: "+currentCode);
 }
 
-function updateBars() {
-  if (!gameState || !gameState.players) return;
-  gameState.players.forEach((p, i) => {
-    const n = i + 1;
-    $("name" + n).textContent = p.name || "PLAYER " + n;
-    $("hp" + n).style.width = Math.max(0, p.hp) + "%";
-    $("power" + n).style.width = Math.max(0, p.charge) + "%";
-  });
+function updateHUD(){
+ if(!gameState)return;
+ gameState.players.forEach((p,i)=>{
+  const n=i+1;
+  $("name"+n).textContent=p.name||"PLAYER "+n;
+  $("hp"+n).style.width=Math.max(0,p.hp)+"%";
+  $("power"+n).style.width=Math.max(0,p.charge)+"%";
+ });
+ if(gameState.started)$("roundInfo").textContent=gameState.winner?"MATCH OVER":"FIGHT!";
+ else $("roundInfo").textContent="WAITING";
 }
 
-const joystick = $("joystick");
-const stick = $("stick");
+$("createBtn").onclick=createRoom;
+$("joinBtn").onclick=joinRoom;
+$("startBtn").onclick=startMatch;
+$("fightBtn").onclick=startMatch;
+$("copyBtn").onclick=copyCode;
+$("punchBtn").onclick=()=>action("punch");
+$("specialBtn").onclick=()=>action("special");
+$("menuBtn").onclick=()=>{$("lobby").style.display="block"};
+$("closeLobby").onclick=()=>{$("lobby").style.display="none"};
 
-function moveJoystick(e) {
-  const rect = joystick.getBoundingClientRect();
-  let dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-  let dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-  const length = Math.hypot(dx, dy);
-  if (length > 1) {
-    dx /= length;
-    dy /= length;
-  }
-  joyX = dx;
-  joyY = dy;
-  const max = rect.width / 2 - 25;
-  stick.style.left = (rect.width / 2 - 24 + dx * max) + "px";
-  stick.style.top = (rect.height / 2 - 24 + dy * max) + "px";
+const joy=$("joystick"),stick=$("stick");
+function moveJoy(e){
+ const r=joy.getBoundingClientRect();
+ let x=(e.clientX-r.left-r.width/2)/(r.width/2);
+ let y=(e.clientY-r.top-r.height/2)/(r.height/2);
+ const d=Math.hypot(x,y);
+ if(d>1){x/=d;y/=d}
+ joyX=x;joyY=y;
+ const m=r.width*.29;
+ stick.style.left=(r.width/2-21+x*m)+"px";
+ stick.style.top=(r.height/2-21+y*m)+"px";
 }
-
-joystick.addEventListener("pointerdown", e => {
-  joystickActive = true;
-  joystick.setPointerCapture(e.pointerId);
-  moveJoystick(e);
+function stopJoy(){
+ joyActive=false;joyX=joyY=0;
+ stick.style.left="29%";stick.style.top="29%";
+}
+joy.addEventListener("pointerdown",e=>{
+ joyActive=true;joy.setPointerCapture(e.pointerId);moveJoy(e);
 });
-joystick.addEventListener("pointermove", e => {
-  if (joystickActive) moveJoystick(e);
+joy.addEventListener("pointermove",e=>{if(joyActive)moveJoy(e)});
+joy.addEventListener("pointerup",stopJoy);
+joy.addEventListener("pointercancel",stopJoy);
+
+setInterval(()=>{
+ if(socket&&socket.connected&&mySlot!==null&&gameState?.started&&
+ (Math.abs(joyX)>.08||Math.abs(joyY)>.08)){
+  socket.emit("move",{dx:joyX,dy:joyY});
+ }
+},80);
+
+const block=$("blockBtn");
+block.addEventListener("pointerdown",e=>{
+ e.preventDefault();if(socket&&socket.connected&&gameState?.started)socket.emit("action","block");
 });
-function stopJoystick() {
-  joystickActive = false;
-  joyX = 0;
-  joyY = 0;
-  stick.style.left = (joystick.clientWidth / 2 - 24) + "px";
-  stick.style.top = (joystick.clientHeight / 2 - 24) + "px";
+function releaseBlock(e){
+ e.preventDefault();if(socket&&socket.connected)socket.emit("action","release");
 }
-joystick.addEventListener("pointerup", stopJoystick);
-joystick.addEventListener("pointercancel", stopJoystick);
+block.addEventListener("pointerup",releaseBlock);
+block.addEventListener("pointercancel",releaseBlock);
+block.addEventListener("pointerleave",e=>{if(e.buttons===0)releaseBlock(e)});
 
-setInterval(() => {
-  if (socket && socket.connected && mySlot !== null &&
-      (Math.abs(joyX) > 0.08 || Math.abs(joyY) > 0.08)) {
-    socket.emit("move", {dx: joyX, dy: joyY});
+function drawArena(){
+ if(arena.complete&&arena.naturalWidth){
+  ctx.drawImage(arena,0,0,1280,720);
+ }else{
+  const g=ctx.createLinearGradient(0,0,0,720);
+  g.addColorStop(0,"#101a32");g.addColorStop(1,"#030711");
+  ctx.fillStyle=g;ctx.fillRect(0,0,1280,720);
+  ctx.fillStyle="#151e32";ctx.fillRect(0,300,1280,420);
+  ctx.fillStyle="#c99a43";ctx.fillRect(80,300,1120,340);
+  ctx.fillStyle="#171b29";ctx.fillRect(95,315,1090,310);
+  for(let i=0;i<3;i++){
+   ctx.strokeStyle=["#dc263e","#e9d8a4","#246dd0"][i];
+   ctx.lineWidth=9;ctx.beginPath();
+   ctx.moveTo(95,390+i*65);ctx.lineTo(1185,390+i*65);ctx.stroke();
   }
-}, 80);
-
-const blockBtn = $("blockBtn");
-function blockStart(e) {
-  e.preventDefault();
-  if (socket && socket.connected) socket.emit("action", "block");
-}
-function blockEnd(e) {
-  e.preventDefault();
-  if (socket && socket.connected) socket.emit("action", "release");
-}
-blockBtn.addEventListener("pointerdown", blockStart);
-blockBtn.addEventListener("pointerup", blockEnd);
-blockBtn.addEventListener("pointercancel", blockEnd);
-blockBtn.addEventListener("pointerleave", e => {
-  if (e.buttons === 0) blockEnd(e);
-});
-
-const canvas = $("game");
-const ctx = canvas.getContext("2d");
-const arenaImage = new Image();
-arenaImage.src = "/arena.png";
-const fighterImage = new Image();
-fighterImage.src = "/characters/fighters.png";
-
-function drawRing() {
-  if (arenaImage.complete && arenaImage.naturalWidth > 0) {
-    ctx.drawImage(arenaImage, 0, 0, canvas.width, canvas.height);
-  } else {
-    ctx.fillStyle = "#101526";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "#d0a044";
-    ctx.fillRect(35, 105, 830, 330);
-    ctx.fillStyle = "#e8d4ad";
-    ctx.fillRect(48, 118, 804, 305);
-    ctx.strokeStyle = "#b72c42";
-    ctx.lineWidth = 8;
-    ctx.strokeRect(48, 118, 804, 305);
-    for (let i = 0; i < 3; i++) {
-      ctx.strokeStyle = "#d83b4a";
-      ctx.lineWidth = 5;
-      ctx.beginPath();
-      ctx.moveTo(48, 180 + i * 55);
-      ctx.lineTo(852, 180 + i * 55);
-      ctx.stroke();
-    }
-  }
+ }
 }
 
-function drawFighter(p, slot) {
-  const x = 48 + (p.x / 100) * 804;
-  const y = 118 + (p.y / 100) * 280;
-  const character = (p.character || "").toLowerCase();
-  let index = 0;
-  if (character.includes("shah") || character.includes("srk")) index = 1;
-  else if (character.includes("amitabh") || character.includes("big")) index = 2;
+function fighterIndex(p){
+ const c=(p.character||"").toLowerCase();
+ if(c.includes("shah")||c.includes("srk"))return 1;
+ if(c.includes("amitabh")||c.includes("big"))return 2;
+ return 0;
+}
 
-  const now = Date.now();
-  const attacking = p.attacking || (now < attackingUntil && mySlot === slot);
-  const blocking = p.blocking;
-  const facing = slot === 0 ? 1 : -1;
-  const bob = Math.sin(now / 160 + slot) * 4;
+function drawFighter(p,slot,now){
+ const x=150+p.x*9.8;
+ const y=350+p.y*2.4;
+ const idx=fighterIndex(p);
+ const phase=now/150+slot*2;
+ const bob=Math.sin(phase)*5;
+ const moving=slot===mySlot&&(Math.abs(joyX)+Math.abs(joyY)>.1);
+ const attacking=!!p.attacking;
+ const blocking=!!p.blocking;
+ const face=slot===0?1:-1;
+ const punch=attacking?Math.sin(now/35)*35:0;
 
-  ctx.save();
-  ctx.translate(x, y + bob);
-  ctx.scale(facing, 1);
+ ctx.save();
+ ctx.translate(x,y+bob);
+ ctx.scale(face,1);
 
-  ctx.fillStyle = "rgba(0,0,0,.45)";
-  ctx.beginPath();
-  ctx.ellipse(0, 5, 45, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
+ ctx.fillStyle="#0009";
+ ctx.beginPath();ctx.ellipse(0,8,65,17,0,0,Math.PI*2);ctx.fill();
 
-  if (fighterImage.complete && fighterImage.naturalWidth > 0) {
-    const sw = fighterImage.naturalWidth / 3;
-    ctx.drawImage(fighterImage, index * sw, 0, sw,
-      fighterImage.naturalHeight, -65, -165, 130, 165);
-  } else {
-    ctx.fillStyle = "#d99a6c";
-    ctx.beginPath();
-    ctx.arc(0, -110, 25, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = ["#a92d3e", "#2767a9", "#793ca0"][index];
-    ctx.fillRect(-28, -85, 56, 75);
+ if(moving){
+  ctx.translate(Math.sin(phase*2)*4,0);
+  ctx.rotate(Math.sin(phase*2)*.035);
+ }
+
+ if(fighters.complete&&fighters.naturalWidth){
+  const sw=fighters.naturalWidth/3;
+  ctx.drawImage(fighters,idx*sw,0,sw,fighters.naturalHeight,-85,-240,170,240);
+ }else{
+  ctx.fillStyle="#dba47d";
+  ctx.beginPath();ctx.arc(0,-190,34,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=["#a91f37","#205aab","#57348e"][idx];
+  ctx.fillRect(-43,-155,86,115);
+  ctx.fillStyle="#222";ctx.fillRect(-35,-40,28,45);ctx.fillRect(8,-40,28,45);
+ }
+
+ // Animated punch streak
+ if(attacking){
+  ctx.strokeStyle="#ffe25a";ctx.lineWidth=17;ctx.lineCap="round";
+  ctx.beginPath();ctx.moveTo(35,-130);ctx.lineTo(105+punch,-140);ctx.stroke();
+  ctx.fillStyle="#fff1a1";ctx.beginPath();
+  ctx.arc(110+punch,-140,13,0,Math.PI*2);ctx.fill();
+ }
+
+ if(blocking){
+  ctx.strokeStyle="#4bdcff";ctx.lineWidth=10;
+  ctx.beginPath();ctx.arc(0,-130,75,-1.5,1.5);ctx.stroke();
+ }
+
+ ctx.restore();
+
+ ctx.fillStyle="#fff";ctx.font="bold 19px Arial";ctx.textAlign="center";
+ ctx.shadowColor="#000";ctx.shadowBlur=7;
+ ctx.fillText(p.name||"FIGHTER",x,y+32);
+ ctx.shadowBlur=0;
+}
+
+function drawEffects(){
+ effects=effects.filter(e=>e.life>0);
+ effects.forEach(e=>{
+  e.life-=.035;
+  const alpha=Math.max(0,e.life);
+  ctx.save();ctx.globalAlpha=alpha;
+  if(e.type==="hit"){
+   ctx.fillStyle="#ffe05c";ctx.font="bold 65px Arial";ctx.textAlign="center";
+   ctx.fillText("💥",640,310);
   }
-
-  if (attacking) {
-    ctx.strokeStyle = "#ffdc3c";
-    ctx.lineWidth = 8;
-    ctx.beginPath();
-    ctx.moveTo(25, -85);
-    ctx.lineTo(85, -85);
-    ctx.stroke();
+  if(e.type==="swing"){
+   ctx.strokeStyle="#fff1a0";ctx.lineWidth=12;
+   ctx.beginPath();ctx.arc(640,350,100,Math.PI,Math.PI*1.8);ctx.stroke();
   }
-  if (blocking) {
-    ctx.strokeStyle = "#55d8ff";
-    ctx.lineWidth = 7;
-    ctx.beginPath();
-    ctx.arc(0, -85, 48, -1.3, 1.3);
-    ctx.stroke();
+  if(e.type==="special"){
+   ctx.fillStyle="#ffe04e";ctx.font="bold 65px Arial";ctx.textAlign="center";
+   ctx.fillText("⚡ SUPER POWER ⚡",640,180);
+   ctx.strokeStyle="#fff";ctx.lineWidth=8;
+   ctx.beginPath();ctx.moveTo(640,190);ctx.lineTo(550,420);ctx.lineTo(720,320);ctx.stroke();
   }
   ctx.restore();
-
-  ctx.fillStyle = "white";
-  ctx.font = "bold 16px Arial";
-  ctx.textAlign = "center";
-  ctx.fillText(p.name || "FIGHTER", x, y + 25);
+ });
 }
 
-function render() {
-  drawRing();
-  if (gameState && gameState.players) {
-    gameState.players.forEach((p, i) => drawFighter(p, i));
-  } else {
-    ctx.fillStyle = "white";
-    ctx.font = "bold 24px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("CREATE A ROOM TO ENTER THE RING", 450, 260);
-  }
-  if (Date.now() < effectUntil) {
-    ctx.fillStyle = "#ffdf58";
-    ctx.font = "bold 35px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText(effectText, 450, 100);
-  }
-  if (gameState && gameState.winner) {
-    ctx.fillStyle = "#ffdf58";
-    ctx.font = "bold 42px Arial";
-    ctx.textAlign = "center";
-    ctx.fillText("WINNER!", 450, 245);
-  }
-  requestAnimationFrame(render);
-}
+function render(t){
+ const dt=Math.min(40,t-lastTime||16);lastTime=t;animTime+=dt;
+ ctx.clearRect(0,0,1280,720);
+ ctx.save();
+ if(shake>0){
+  ctx.translate((Math.random()-.5)*shake,(Math.random()-.5)*shake);
+  shake*=.86;if(shake<.5)shake=0;
+ }
+ drawArena();
 
-window.createRoom = createRoom;
-window.joinRoom = joinRoom;
-window.startMatch = startMatch;
-window.copyCode = copyCode;
-window.doAction = doAction;
-render();
+ if(gameState?.players){
+  gameState.players.forEach((p,i)=>drawFighter(p,i,t));
+ }else{
+  ctx.fillStyle="#fff";ctx.font="bold 35px Arial";ctx.textAlign="center";
+  ctx.fillText("ENTER THE RING",640,360);
+ }
+ drawEffects();
+
+ if(gameState?.winner){
+  ctx.fillStyle="#ffdc68";ctx.font="bold 70px Arial";ctx.textAlign="center";
+  ctx.shadowColor="#000";ctx.shadowBlur=20;
+  ctx.fillText("WINNER!",640,280);ctx.shadowBlur=0;
+ }
+ ctx.restore();
+ requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
 </script>
 </body>
 </html>
