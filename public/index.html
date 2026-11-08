@@ -24,10 +24,42 @@ header{
 .logo{font-weight:1000;letter-spacing:1px;color:#ffd66b;font-size:clamp(15px,3vw,23px)}
 #status{font-size:11px;color:#b9d5c9}
 #lobby{
- position:absolute;z-index:10;top:65px;left:50%;transform:translateX(-50%);
- width:min(95%,430px);padding:15px;background:#111a2c;
- border:1px solid #c69b48;border-radius:15px;
- box-shadow:0 15px 60px #000b;text-align:center;
+ position:fixed;
+ z-index:100;
+ top:50%;
+ left:50%;
+ transform:translate(-50%,-50%);
+ width:min(94%,650px);
+ max-height:calc(100dvh - 90px);
+ overflow-y:auto;
+ padding:12px;
+ background:#111a2c;
+ border:2px solid #c69b48;
+ border-radius:15px;
+ box-shadow:0 15px 60px #000b;
+ text-align:center;
+}
+
+#closeLobby{
+ position:sticky;
+ bottom:0;
+ z-index:5;
+ width:100%;
+ padding:12px;
+ background:#34425c;
+ border-radius:8px;
+}
+
+@media(orientation:landscape){
+ #lobby{
+  width:min(75%,650px);
+  max-height:calc(100dvh - 55px);
+  padding:8px 12px;
+ }
+ #lobby h2{font-size:22px;margin:3px}
+ #lobby input,#lobby select{padding:8px;margin:3px 0}
+ #lobby button{padding:9px;margin-top:3px}
+ #roomCode{margin:3px;font-size:20px}
 }
 #lobby h2{margin:0 0 12px;color:#ffd66b}
 #lobby input,#lobby select{
