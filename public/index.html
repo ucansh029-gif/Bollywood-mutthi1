@@ -4,45 +4,43 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>SUPERSTAR SHOWDOWN</title>
-
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#080b16;color:white;font-family:Arial;text-align:center;overflow-x:hidden}
-header{padding:12px 5px;background:linear-gradient(90deg,#6b101b,#17152d,#123b68)}
-h1{margin:3px;font-size:clamp(23px,5vw,38px)}
-.subtitle{color:#ffd76a;font-size:12px;letter-spacing:2px}
-main{width:100%;max-width:1100px;margin:auto;padding:8px}
-.panel{background:#151b2c;border:1px solid #39435b;border-radius:12px;padding:12px;margin:8px 0}
-input,select,button{border:0;border-radius:8px;padding:12px;font-size:15px}
+body{margin:0;background:#080b16;color:white;font-family:Arial;text-align:center}
+header{padding:14px;background:linear-gradient(90deg,#741322,#17152d,#123b68)}
+h1{font-size:clamp(23px,5vw,36px);margin:4px}
+.subtitle{color:#ffd76a;letter-spacing:2px;font-size:12px}
+main{max-width:1100px;margin:auto;padding:8px}
+.panel{background:#151b2c;border:1px solid #39435b;border-radius:12px;padding:12px;margin:9px 0}
+input,select,button{padding:12px;border:0;border-radius:8px;font-size:15px}
 input,select{background:#252e43;color:white;max-width:100%}
-button{color:white;font-weight:bold;background:#bd263b;cursor:pointer}
-button:active{transform:scale(.96)}
+button{background:#bd263b;color:white;font-weight:bold}
 .blue{background:#2464b5}
 .gold{background:#c58a19;color:#160d00}
 .green{background:#168b59}
-#game{display:block;width:100%;height:auto;background:#101526;border:2px solid #d7a83e;border-radius:10px;touch-action:none}
-#status{color:#ffd76a;font-size:14px;min-height:20px}
-#roomCode{font-size:25px;color:#ffdf75;letter-spacing:5px;font-weight:bold;margin:8px}
+#status{color:#ffd76a;min-height:22px}
+#roomCode{font-size:25px;color:#ffdf75;letter-spacing:5px;margin:10px}
 .bars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.playerBox{background:#202a40;border-radius:9px;padding:9px}
-.bar{height:13px;background:#3a4050;border-radius:20px;overflow:hidden;margin:5px 0}
+.playerBox{background:#202a40;padding:9px;border-radius:9px}
+.bar{height:13px;background:#3a4050;border-radius:20px;overflow:hidden;margin:6px 0}
 .hp{height:100%;width:100%;background:#e63848}
-.power{height:100%;width:0%;background:#ffce37}
-.controls{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
-#joystick{width:125px;height:125px;border-radius:50%;background:#25314a;border:3px solid #7788a9;position:relative;touch-action:none;flex-shrink:0}
-#stick{width:48px;height:48px;border-radius:50%;background:#d8ddeb;position:absolute;left:35px;top:35px}
-.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;flex:1}
-.actions button{min-height:54px}
-.small{font-size:11px;color:#aab5cc}
-@media(max-width:420px){
-#joystick{width:105px;height:105px}
-#stick{left:27px;top:27px}
-.actions button{font-size:12px;padding:10px}
+.power{height:100%;width:0;background:#ffce37}
+#game{display:block;width:100%;height:auto;background:#101526;border:2px solid #d7a83e;border-radius:10px}
+.controls{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#joystick{width:110px;height:110px;border-radius:50%;background:#25314a;border:3px solid #7788a9;position:relative;touch-action:none;flex-shrink:0}
+#stick{width:48px;height:48px;border-radius:50%;background:#d8ddeb;position:absolute;left:28px;top:28px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
+.actions button{min-height:52px}
+.small{font-size:12px;color:#aab5cc}
+@media(max-width:400px){
+#joystick{width:95px;height:95px}
+#stick{left:22px;top:22px}
+.actions button{font-size:12px;padding:8px}
 }
 </style>
 </head>
-
 <body>
+
 <header>
 <h1>🥊 SUPERSTAR SHOWDOWN 🥊</h1>
 <div class="subtitle">THE BOLLYWOOD BOXING CHAMPIONSHIP</div>
@@ -51,13 +49,14 @@ button:active{transform:scale(.96)}
 <main>
 <section class="panel">
 <input id="playerName" placeholder="Enter your name" maxlength="16">
+<br><br>
 <select id="character">
 <option>Salman Khan</option>
 <option>Shah Rukh Khan</option>
 <option>Amitabh Bachchan</option>
 </select>
 <button onclick="createRoom()">CREATE ROOM</button>
-<hr style="border-color:#39435b;margin:13px">
+<hr>
 <input id="joinCode" placeholder="Enter room code" maxlength="6">
 <button class="blue" onclick="joinRoom()">JOIN ROOM</button>
 <div class="small">Share your room code with your friend.</div>
@@ -88,22 +87,18 @@ button:active{transform:scale(.96)}
 
 <section class="panel">
 <canvas id="game" width="900" height="500"></canvas>
-<p class="small">Move close to your opponent and attack!</p>
-</section>
-
-<section class="panel">
 <div class="controls">
 <div id="joystick"><div id="stick"></div></div>
 <div class="actions">
 <button onclick="doAction('punch')">👊 PUNCH</button>
 <button class="blue" id="blockBtn">🛡️ BLOCK</button>
-<button class="gold" onclick="doAction('special')">⚡ SPECIAL</button>
-<button class="green" onclick="doAction('punch')">🥊 ATTACK</button>
+<button class="gold" onclick="doAction('special')">⚡ SUPERPOWER</button>
+<button class="green" onclick="startMatch()">🥊 FIGHT</button>
 </div>
 </div>
-<p class="small">Use joystick to move. Hold BLOCK to defend.</p>
+<p class="small">Use joystick to move. Get close to your opponent to punch.</p>
 </section>
-<p class="small">Unofficial fan-made game. Not affiliated with the actors.</p>
+<p class="small">Unofficial fan-made game.</p>
 </main>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -111,24 +106,9 @@ button:active{transform:scale(.96)}
 "use strict";
 
 const $ = id => document.getElementById(id);
-const socket = io(window.location.origin, {
-  transports: ["polling", "websocket"],
-  reconnection: true,
-  reconnectionAttempts: Infinity,
-  timeout: 20000
-});
+const statusBox = $("status");
 
-const canvas = $("game");
-const ctx = canvas.getContext("2d");
-
-const fighterImage = new Image();
-  const salmanAnimation = new Image();
-salmanAnimation.src = "/characters/salman_fighter_animated.gif";
-fighterImage.src = "/characters/fighters.png";
-
-const arenaImage = new Image();
-arenaImage.src = "/arena.png";
-
+let socket = null;
 let mySlot = null;
 let currentCode = "";
 let gameState = null;
@@ -139,47 +119,55 @@ let effectText = "";
 let effectUntil = 0;
 
 function say(message) {
-  $("status").textContent = message;
+  statusBox.textContent = message;
 }
 
-socket.on("connect", () => {
-  say("SERVER CONNECTED! Create or join a room.");
-  console.log("SOCKET CONNECTED", socket.id);
-});
+if (typeof io === "undefined") {
+  say("Socket.IO script failed to load. Refresh the page.");
+} else {
+  socket = io({
+    transports: ["polling"],
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    timeout: 20000
+  });
 
-socket.on("connect_error", err => {
-  say("CONNECTION FAILED: " + err.message);
-  console.log("SOCKET ERROR", err);
-});
+  socket.on("connect", () => {
+    say("SERVER CONNECTED! Create or join a room.");
+  });
 
-socket.on("disconnect", reason => {
-  say("Disconnected: " + reason);
-  console.log("SOCKET DISCONNECTED", reason);
-});
+  socket.on("connect_error", err => {
+    say("CONNECTION FAILED: " + err.message);
+  });
 
-socket.on("joined", data => {
-  currentCode = data.code;
-  mySlot = data.slot;
-  $("roomCode").textContent = data.code;
-  say("Room joined! You are Player " + (mySlot + 1));
-});
+  socket.on("disconnect", reason => {
+    say("Disconnected: " + reason);
+  });
 
-socket.on("state", state => {
-  gameState = state;
-  if (state.code) {
-    currentCode = state.code;
-    $("roomCode").textContent = state.code;
-  }
-  updateBars();
-  if (state.message) say(state.message);
-});
+  socket.on("joined", data => {
+    currentCode = data.code;
+    mySlot = data.slot;
+    $("roomCode").textContent = data.code;
+    say("Room joined! You are Player " + (mySlot + 1));
+  });
 
-socket.on("errorMessage", message => say(message));
+  socket.on("state", state => {
+    gameState = state;
+    if (state.code) {
+      currentCode = state.code;
+      $("roomCode").textContent = state.code;
+    }
+    updateBars();
+    if (state.message) say(state.message);
+  });
+
+  socket.on("errorMessage", message => say(message));
+}
 
 function createRoom() {
   const name = $("playerName").value.trim();
   if (!name) return say("Enter your name first!");
-  if (!socket.connected) return say("Server not connected. Please wait.");
+  if (!socket || !socket.connected) return say("Server not connected!");
   socket.emit("createRoom", {
     name,
     character: $("character").value
@@ -190,11 +178,9 @@ function createRoom() {
 function joinRoom() {
   const name = $("playerName").value.trim();
   const code = $("joinCode").value.trim().toUpperCase();
-
   if (!name) return say("Enter your name first!");
-  if (code.length !== 6) return say("Enter a valid 6-character room code.");
-  if (!socket.connected) return say("Server not connected. Please wait.");
-
+  if (code.length !== 6) return say("Enter a valid room code!");
+  if (!socket || !socket.connected) return say("Server not connected!");
   socket.emit("joinRoom", {
     code,
     name,
@@ -204,9 +190,8 @@ function joinRoom() {
 }
 
 function startMatch() {
-  if (!socket.connected) return say("Server not connected!");
+  if (!socket || !socket.connected) return say("Server not connected!");
   socket.emit("startMatch");
-  say("Starting fight...");
 }
 
 function copyCode() {
@@ -214,33 +199,23 @@ function copyCode() {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(currentCode)
       .then(() => say("Room code copied!"))
-      .catch(() => say("Your room code is: " + currentCode));
+      .catch(() => say("Room code: " + currentCode));
   } else {
-    say("Your room code is: " + currentCode);
+    say("Room code: " + currentCode);
   }
 }
 
 function doAction(type) {
-  if (!socket.connected) return say("Server disconnected!");
+  if (!socket || !socket.connected) return say("Server disconnected!");
   if (!gameState || !gameState.started) return say("Start the fight first!");
-
-  // Server expects a string, not an object.
   socket.emit("action", type);
-
   attackingUntil = Date.now() + 250;
-
-  if (type === "special") {
-    effectText = "⚡ SUPER POWER!";
-    effectUntil = Date.now() + 1000;
-  } else {
-    effectText = "POW!";
-    effectUntil = Date.now() + 400;
-  }
+  effectText = type === "special" ? "⚡ SUPER POWER!" : "POW!";
+  effectUntil = Date.now() + 700;
 }
 
 function updateBars() {
   if (!gameState || !gameState.players) return;
-
   gameState.players.forEach((p, i) => {
     const n = i + 1;
     $("name" + n).textContent = p.name || "PLAYER " + n;
@@ -254,18 +229,15 @@ const stick = $("stick");
 
 function moveJoystick(e) {
   const rect = joystick.getBoundingClientRect();
-  let dx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
-  let dy = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-
+  let dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+  let dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
   const length = Math.hypot(dx, dy);
   if (length > 1) {
     dx /= length;
     dy /= length;
   }
-
   joyX = dx;
   joyY = dy;
-
   const max = rect.width / 2 - 25;
   stick.style.left = (rect.width / 2 - 24 + dx * max) + "px";
   stick.style.top = (rect.height / 2 - 24 + dy * max) + "px";
@@ -276,11 +248,9 @@ joystick.addEventListener("pointerdown", e => {
   joystick.setPointerCapture(e.pointerId);
   moveJoystick(e);
 });
-
 joystick.addEventListener("pointermove", e => {
   if (joystickActive) moveJoystick(e);
 });
-
 function stopJoystick() {
   joystickActive = false;
   joyX = 0;
@@ -288,35 +258,38 @@ function stopJoystick() {
   stick.style.left = (joystick.clientWidth / 2 - 24) + "px";
   stick.style.top = (joystick.clientHeight / 2 - 24) + "px";
 }
-
 joystick.addEventListener("pointerup", stopJoystick);
 joystick.addEventListener("pointercancel", stopJoystick);
 
 setInterval(() => {
-  if (socket.connected && mySlot !== null &&
+  if (socket && socket.connected && mySlot !== null &&
       (Math.abs(joyX) > 0.08 || Math.abs(joyY) > 0.08)) {
     socket.emit("move", {dx: joyX, dy: joyY});
   }
 }, 80);
 
 const blockBtn = $("blockBtn");
-
 function blockStart(e) {
   e.preventDefault();
-  if (socket.connected) socket.emit("action", "block");
+  if (socket && socket.connected) socket.emit("action", "block");
 }
-
 function blockEnd(e) {
   e.preventDefault();
-  if (socket.connected) socket.emit("action", "release");
+  if (socket && socket.connected) socket.emit("action", "release");
 }
-
 blockBtn.addEventListener("pointerdown", blockStart);
 blockBtn.addEventListener("pointerup", blockEnd);
 blockBtn.addEventListener("pointercancel", blockEnd);
 blockBtn.addEventListener("pointerleave", e => {
   if (e.buttons === 0) blockEnd(e);
 });
+
+const canvas = $("game");
+const ctx = canvas.getContext("2d");
+const arenaImage = new Image();
+arenaImage.src = "/arena.png";
+const fighterImage = new Image();
+fighterImage.src = "/characters/fighters.png";
 
 function drawRing() {
   if (arenaImage.complete && arenaImage.naturalWidth > 0) {
@@ -332,7 +305,7 @@ function drawRing() {
     ctx.lineWidth = 8;
     ctx.strokeRect(48, 118, 804, 305);
     for (let i = 0; i < 3; i++) {
-      ctx.strokeStyle = i === 1 ? "#d83b4a" : "#f4eee0";
+      ctx.strokeStyle = "#d83b4a";
       ctx.lineWidth = 5;
       ctx.beginPath();
       ctx.moveTo(48, 180 + i * 55);
@@ -342,133 +315,50 @@ function drawRing() {
   }
 }
 
-
 function drawFighter(p, slot) {
   const x = 48 + (p.x / 100) * 804;
   const y = 118 + (p.y / 100) * 280;
-
   const character = (p.character || "").toLowerCase();
   let index = 0;
-
   if (character.includes("shah") || character.includes("srk")) index = 1;
   else if (character.includes("amitabh") || character.includes("big")) index = 2;
 
   const now = Date.now();
-  const attacking = p.attacking ||
-    (now < attackingUntil && mySlot === slot);
-
+  const attacking = p.attacking || (now < attackingUntil && mySlot === slot);
   const blocking = p.blocking;
   const facing = slot === 0 ? 1 : -1;
-
-  // Smooth idle movement
   const bob = Math.sin(now / 160 + slot) * 4;
-  const lunge = attacking ? 18 : 0;
-  const tilt = attacking ? -0.12 : blocking ? 0.08 : 0;
 
   ctx.save();
-  ctx.translate(x + lunge * facing, y + bob);
+  ctx.translate(x, y + bob);
   ctx.scale(facing, 1);
-  ctx.rotate(tilt);
-
-  // Fighter shadow
-  ctx.fillStyle = "rgba(0,0,0,.45)";
-  ctx.beginPath();
-  ctx.ellipse(0, 5, 45, 12, 0, 0, Math.PI * 2);
-  ctx.fill();
-
-  // Fighter artwork
-  if (index === 0 && salmanAnimation.complete && salmanAnimation.naturalWidth > 0) {
-  ctx.drawImage(salmanAnimation, -65, -165, 130, 165);
-
-} else if (fighterImage.complete && fighterImage.naturalWidth > 0) {
-  const sw = fighterImage.naturalWidth / 3;
-  const sh = fighterImage.naturalHeight;
-
-  ctx.drawImage(
-    fighterImage,
-    index * sw, 0, sw, sh,
-    -65, -165, 130, 165
-  );
-
-} else {
-  ctx.fillStyle = "#d99a6c";
-  ctx.beginPath();
-  ctx.arc(0, -110, 25, 0, Math.PI * 2);
-  ctx.fill();
-  }
-  } else {
-function drawFighter(p, slot) {
-  const x = 48 + (p.x / 100) * 804;
-  const y = 118 + (p.y / 100) * 280;
-
-  const character = (p.character || "").toLowerCase();
-  let index = 0;
-
-  if (character.includes("shah") || character.includes("srk")) index = 1;
-  else if (character.includes("amitabh") || character.includes("big")) index = 2;
-
-  const now = Date.now();
-  const attacking = p.attacking ||
-    (now < attackingUntil && mySlot === slot);
-
-  const blocking = p.blocking;
-  const facing = slot === 0 ? 1 : -1;
-
-  const bob = Math.sin(now / 160 + slot) * 4;
-  const lunge = attacking ? 18 : 0;
-  const tilt = attacking ? -0.12 : blocking ? 0.08 : 0;
-
-  ctx.save();
-  ctx.translate(x + lunge * facing, y + bob);
-  ctx.scale(facing, 1);
-  ctx.rotate(tilt);
 
   ctx.fillStyle = "rgba(0,0,0,.45)";
   ctx.beginPath();
   ctx.ellipse(0, 5, 45, 12, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  if (index === 0 && salmanAnimation.complete &&
-      salmanAnimation.naturalWidth > 0) {
-
-    ctx.drawImage(salmanAnimation, -65, -165, 130, 165);
-
-  } else if (fighterImage.complete &&
-             fighterImage.naturalWidth > 0) {
-
+  if (fighterImage.complete && fighterImage.naturalWidth > 0) {
     const sw = fighterImage.naturalWidth / 3;
-    const sh = fighterImage.naturalHeight;
-
-    ctx.drawImage(
-      fighterImage,
-      index * sw, 0, sw, sh,
-      -65, -165, 130, 165
-    );
-
+    ctx.drawImage(fighterImage, index * sw, 0, sw,
+      fighterImage.naturalHeight, -65, -165, 130, 165);
   } else {
     ctx.fillStyle = "#d99a6c";
     ctx.beginPath();
     ctx.arc(0, -110, 25, 0, Math.PI * 2);
     ctx.fill();
-
     ctx.fillStyle = ["#a92d3e", "#2767a9", "#793ca0"][index];
     ctx.fillRect(-28, -85, 56, 75);
   }
 
   if (attacking) {
-    ctx.strokeStyle = "rgba(255,220,60,.8)";
+    ctx.strokeStyle = "#ffdc3c";
     ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.moveTo(25, -85);
     ctx.lineTo(85, -85);
     ctx.stroke();
-
-    ctx.fillStyle = "#ffcf35";
-    ctx.beginPath();
-    ctx.arc(85, -85, 15, 0, Math.PI * 2);
-    ctx.fill();
   }
-
   if (blocking) {
     ctx.strokeStyle = "#55d8ff";
     ctx.lineWidth = 7;
@@ -476,7 +366,6 @@ function drawFighter(p, slot) {
     ctx.arc(0, -85, 48, -1.3, 1.3);
     ctx.stroke();
   }
-
   ctx.restore();
 
   ctx.fillStyle = "white";
@@ -484,32 +373,29 @@ function drawFighter(p, slot) {
   ctx.textAlign = "center";
   ctx.fillText(p.name || "FIGHTER", x, y + 25);
 }
+
 function render() {
   drawRing();
-
   if (gameState && gameState.players) {
     gameState.players.forEach((p, i) => drawFighter(p, i));
   } else {
     ctx.fillStyle = "white";
-    ctx.font = "bold 25px Arial";
+    ctx.font = "bold 24px Arial";
     ctx.textAlign = "center";
     ctx.fillText("CREATE A ROOM TO ENTER THE RING", 450, 260);
   }
-
   if (Date.now() < effectUntil) {
     ctx.fillStyle = "#ffdf58";
     ctx.font = "bold 35px Arial";
     ctx.textAlign = "center";
     ctx.fillText(effectText, 450, 100);
   }
-
   if (gameState && gameState.winner) {
     ctx.fillStyle = "#ffdf58";
     ctx.font = "bold 42px Arial";
     ctx.textAlign = "center";
     ctx.fillText("WINNER!", 450, 245);
   }
-
   requestAnimationFrame(render);
 }
 
@@ -518,7 +404,6 @@ window.joinRoom = joinRoom;
 window.startMatch = startMatch;
 window.copyCode = copyCode;
 window.doAction = doAction;
-
 render();
 </script>
 </body>
