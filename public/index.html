@@ -10,22 +10,21 @@
 <style>
 *{box-sizing:border-box}
 html,body{
- margin:0;width:100%;height:100%;
- height:100dvh;overflow:hidden;
- background:#080b16;color:white;
- font-family:Arial,sans-serif;
- touch-action:manipulation;
+ margin:0;width:100%;height:100%;height:100dvh;
+ overflow:hidden;background:#080b16;color:white;
+ font-family:Arial,sans-serif;touch-action:manipulation;
 }
 button,input,select{font:inherit}
 button{
- border:1px solid #ffffff40;border-radius:12px;
- padding:12px;color:white;font-weight:bold;
- background:linear-gradient(135deg,#e52b36,#8d101c);
- cursor:pointer;
+ border:2px solid #ffffff55;border-radius:15px;
+ padding:13px;color:white;font-weight:900;
+ background:linear-gradient(135deg,#f13c45,#870b1b);
+ cursor:pointer;touch-action:manipulation;
+ box-shadow:0 5px 15px #0009;
 }
-button:active{transform:scale(.96)}
+button:active{transform:scale(.94);filter:brightness(1.3)}
 input,select{
- width:100%;padding:13px;border-radius:9px;
+ width:100%;padding:14px;border-radius:10px;
  border:1px solid #59627b;background:#151b2c;
  color:white;margin:6px 0 13px;
 }
@@ -34,19 +33,20 @@ input,select{
  display:flex;flex-direction:column;overflow:hidden;
 }
 header{
- flex-shrink:0;text-align:center;padding:5px;
+ flex-shrink:0;text-align:center;padding:6px;
  background:linear-gradient(90deg,#11182a,#45121c,#11182a);
  border-bottom:2px solid #d7a33c;
 }
-header h1{margin:0;color:#ffd36b;font-size:clamp(18px,3vw,30px)}
+header h1{margin:0;color:#ffd36b;font-size:clamp(19px,4vw,30px)}
 header small{font-size:9px;letter-spacing:3px}
 #status{
- flex-shrink:0;text-align:center;padding:4px;
+ flex-shrink:0;text-align:center;padding:5px;
  color:#ffd36b;font-size:12px;font-weight:bold;
+ min-height:24px;
 }
 #lobby{
- width:min(94%,480px);max-height:calc(100dvh - 65px);
- overflow-y:auto;margin:8px auto;padding:17px;
+ width:min(94%,480px);max-height:calc(100dvh - 70px);
+ overflow-y:auto;margin:8px auto;padding:18px;
  background:#141b2b;border:1px solid #454d65;
  border-radius:17px;box-shadow:0 10px 40px #0009;
 }
@@ -60,30 +60,27 @@ label{font-size:12px;color:#cbd1df}
 
 #battle{
  display:none;flex:1 1 0;min-height:0;
- position:relative;overflow:hidden;
- flex-direction:column;
+ position:relative;overflow:hidden;flex-direction:column;
 }
 .hud{
- flex-shrink:0;display:grid;
- grid-template-columns:1fr 1fr;gap:12px;
- padding:5px 12px;background:#101827;
- z-index:2;
+ flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;
+ gap:12px;padding:6px 12px;background:#101827;z-index:2;
 }
 .playerHud{min-width:0}
 .playerHud:last-child{text-align:right}
-.playerName{font-size:13px;font-weight:bold;color:#ffd36b}
+.playerName{font-size:14px;font-weight:900;color:#ffd36b}
 .bar{
- height:10px;background:#343b4c;border-radius:20px;
- overflow:hidden;margin:3px 0;
+ height:11px;background:#343b4c;border-radius:20px;
+ overflow:hidden;margin:4px 0;
 }
 .hp{
  height:100%;width:100%;
  background:linear-gradient(90deg,#19c65a,#a7ff5c);
- transition:width .2s;
+ transition:width .18s;
 }
 .charge{
- height:100%;width:0;background:#35caff;
- transition:width .2s;
+ height:100%;width:0;background:linear-gradient(90deg,#168aff,#56eaff);
+ transition:width .18s;
 }
 #arenaWrap{
  position:relative;flex:1 1 0;min-height:0;
@@ -94,72 +91,69 @@ label{font-size:12px;color:#cbd1df}
  display:block;z-index:1;
 }
 
-/* FLOATING JOYSTICK */
+/* BIG JOYSTICK */
 #joystick{
- position:absolute;z-index:5;
- left:18px;bottom:18px;
- width:112px;height:112px;
- border-radius:50%;
- background:#ffffff35;
- border:3px solid #ffffffa0;
+ position:absolute;z-index:5;left:18px;bottom:18px;
+ width:142px;height:142px;border-radius:50%;
+ background:#ffffff38;border:4px solid #ffffffbb;
  display:flex;align-items:center;justify-content:center;
- touch-action:none;
- box-shadow:0 4px 18px #0009;
+ touch-action:none;box-shadow:0 5px 22px #000b;
 }
 #stick{
- width:48px;height:48px;border-radius:50%;
- background:linear-gradient(145deg,#fff,#8494ad);
- border:3px solid #34445c;
- box-shadow:0 3px 12px #0009;
- pointer-events:none;
+ width:62px;height:62px;border-radius:50%;
+ background:linear-gradient(145deg,#fff,#8295b5);
+ border:4px solid #34445c;
+ box-shadow:0 4px 15px #000b;pointer-events:none;
 }
 
-/* FLOATING ACTION BUTTONS */
+/* BIG ACTION BUTTONS */
 #actionPad{
- position:absolute;z-index:5;
- right:15px;bottom:15px;
- display:grid;
- grid-template-columns:repeat(2,minmax(78px,105px));
- gap:8px;
+ position:absolute;z-index:5;right:16px;bottom:17px;
+ display:grid;grid-template-columns:repeat(2, minmax(100px,120px));
+ gap:10px;
 }
 #actionPad button{
- min-height:44px;padding:7px 4px;
- font-size:11px;box-shadow:0 4px 12px #0009;
+ min-height:65px;padding:8px 5px;font-size:14px;
+ border-radius:17px;
 }
 #actionPad .block{background:linear-gradient(135deg,#2476c8,#12376c)}
 #actionPad .release{background:linear-gradient(135deg,#3a465e,#202a3d)}
-#actionPad .special{background:linear-gradient(135deg,#b56bff,#5521a8)}
-
+#actionPad .special{
+ background:linear-gradient(135deg,#d18aff,#6421b9);
+ border-color:#f2caff;
+}
 #fullBtn{
  position:absolute;z-index:7;right:12px;top:10px;
- background:#111c30bb;padding:8px 11px;
- font-size:17px;border-radius:9px;
+ background:#111c30dd;padding:9px 13px;
+ font-size:20px;border-radius:10px;
 }
-
 @media (orientation:landscape) and (max-height:500px){
  header{display:none}
- #status{font-size:9px;padding:2px}
+ #status{font-size:9px;padding:2px;min-height:15px}
  .hud{padding:3px 12px}
  .playerName{font-size:11px}
  .bar{height:7px;margin:2px 0}
  #hpText0,#hpText1,#chargeText0,#chargeText1{font-size:9px}
- #joystick{
-  width:90px;height:90px;left:12px;bottom:10px;
- }
- #stick{width:39px;height:39px}
+ #joystick{width:112px;height:112px;left:12px;bottom:9px}
+ #stick{width:49px;height:49px}
  #actionPad{
-  right:10px;bottom:10px;
-  grid-template-columns:repeat(2,88px);gap:5px;
+  right:10px;bottom:9px;
+  grid-template-columns:repeat(2,100px);gap:5px;
  }
- #actionPad button{min-height:35px;font-size:9px}
- #fullBtn{top:5px;right:5px;padding:5px 8px}
+ #actionPad button{min-height:48px;font-size:11px}
+ #fullBtn{top:4px;right:5px;padding:5px 8px}
+}
+@media (max-width:380px){
+ #joystick{width:115px;height:115px}
+ #stick{width:50px;height:50px}
+ #actionPad{grid-template-columns:repeat(2,88px);gap:6px}
+ #actionPad button{min-height:53px;font-size:11px}
 }
 </style>
 </head>
 
 <body>
 <div id="app">
-
 <header>
  <h1>🥊 SUPERSTAR SHOWDOWN 🥊</h1>
  <small>THE BOLLYWOOD BOXING CHAMPIONSHIP</small>
@@ -169,7 +163,6 @@ label{font-size:12px;color:#cbd1df}
 
 <section id="lobby">
  <h2>🔥 ENTER THE ARENA 🔥</h2>
-
  <label>YOUR NAME</label>
  <input id="playerName" maxlength="16" placeholder="Enter your name">
 
@@ -181,7 +174,6 @@ label{font-size:12px;color:#cbd1df}
  </select>
 
  <button style="width:100%" onclick="createRoom()">🔥 CREATE ROOM</button>
-
  <p style="text-align:center;color:#8993a9">— OR JOIN YOUR FRIEND —</p>
 
  <label>ROOM CODE</label>
@@ -194,7 +186,6 @@ label{font-size:12px;color:#cbd1df}
 </section>
 
 <section id="battle">
-
  <div class="hud">
   <div class="playerHud">
    <div class="playerName" id="name0">PLAYER 1</div>
@@ -203,7 +194,6 @@ label{font-size:12px;color:#cbd1df}
    <div class="bar"><div class="charge" id="charge0"></div></div>
    <small id="chargeText0">SUPERPOWER 0%</small>
   </div>
-
   <div class="playerHud">
    <div class="playerName" id="name1">PLAYER 2</div>
    <div class="bar"><div class="hp" id="hp1"></div></div>
@@ -215,12 +205,9 @@ label{font-size:12px;color:#cbd1df}
 
  <div id="arenaWrap">
   <canvas id="game" width="960" height="540"></canvas>
-
   <button id="fullBtn" onclick="enterFullscreen()">⛶</button>
 
-  <div id="joystick">
-   <div id="stick"></div>
-  </div>
+  <div id="joystick"><div id="stick"></div></div>
 
   <div id="actionPad">
    <button onclick="doAction('punch')">👊 PUNCH</button>
@@ -233,7 +220,7 @@ label{font-size:12px;color:#cbd1df}
 </div>
 
 <script>
-/* FULLSCREEN + LANDSCAPE */
+/* FULLSCREEN */
 
 async function enterFullscreen(){
  try{
@@ -244,48 +231,47 @@ async function enterFullscreen(){
    await screen.orientation.lock("landscape");
   }
  }catch(e){
-  console.log("Fullscreen/orientation:",e.message);
+  console.log("Fullscreen:",e.message);
  }
 }
 
-/* SOCKET CONNECTION */
+/* SOCKET */
 
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-let connected = false;
-let roomCode = "";
-let mySlot = 0;
-let gameState = null;
+let connected=false;
+let roomCode="";
+let mySlot=0;
+let gameState=null;
+let lastWinner=null;
 
-const socket = io({
+const socket=io({
  transports:["polling"],
  reconnection:true,
  timeout:20000
 });
 
 socket.on("connect",()=>{
- connected = true;
+ connected=true;
  say("🟢 CONNECTED TO SERVER");
 });
 
 socket.on("disconnect",()=>{
- connected = false;
+ connected=false;
  say("🔴 DISCONNECTED — RECONNECTING...");
 });
 
 socket.on("connect_error",err=>{
- connected = false;
+ connected=false;
  say("CONNECTION ERROR: "+err.message);
 });
 
 socket.on("joined",data=>{
- roomCode = data.code || roomCode;
- mySlot = Number(data.slot || 0);
-
+ roomCode=data.code || roomCode;
+ mySlot=Number(data.slot || 0);
  $("roomInfo").textContent="ROOM CODE: "+roomCode;
  $("copyBtn").classList.remove("hidden");
  $("startBtn").classList.remove("hidden");
-
  say("ROOM JOINED! WAITING FOR OPPONENT...");
 });
 
@@ -308,37 +294,40 @@ socket.on("state",state=>{
 
  if(state.winner){
   say("🏆 "+state.winner+" WINS!");
-  playSound("defeat");
- }else if(state.message){
-  say(state.message);
+  if(lastWinner!==state.winner){
+   playSound("defeat");
+   lastWinner=state.winner;
+  }
+ }else{
+  lastWinner=null;
+  if(state.message)say(state.message);
  }
 });
+
+/* ROOM FUNCTIONS */
 
 function say(message){
  $("status").textContent=message;
 }
 
-/* ROOM FUNCTIONS */
-
 function createRoom(){
+ unlockAudio();
  enterFullscreen();
-
  if(!connected)return say("SERVER CONNECTING — WAIT A MOMENT");
 
  const name=$("playerName").value.trim();
  if(!name)return say("PLEASE ENTER YOUR NAME");
 
  socket.emit("createRoom",{
-  name:name,
+  name,
   character:$("character").value
  });
-
  say("CREATING ROOM...");
 }
 
 function joinRoom(){
+ unlockAudio();
  enterFullscreen();
-
  if(!connected)return say("SERVER CONNECTING — WAIT A MOMENT");
 
  const name=$("playerName").value.trim();
@@ -348,15 +337,15 @@ function joinRoom(){
  if(!code)return say("ENTER ROOM CODE");
 
  socket.emit("joinRoom",{
-  code:code,
-  name:name,
+  code,
+  name,
   character:$("character").value
  });
-
  say("JOINING ROOM...");
 }
 
 function startMatch(){
+ unlockAudio();
  enterFullscreen();
  if(!connected)return say("NOT CONNECTED");
  socket.emit("startMatch");
@@ -374,7 +363,7 @@ function copyCode(){
  }
 }
 
-/* AUDIO */
+/* AUDIO SYSTEM */
 
 const sounds={
  salman:new Audio("/le-re-lund-ke.mp3"),
@@ -384,35 +373,79 @@ const sounds={
  defeat:new Audio("/defeat.mp3")
 };
 
-function playSound(name){
- const audio=sounds[name];
- if(!audio)return;
- try{
-  audio.currentTime=0;
-  audio.play().catch(()=>{});
- }catch(e){}
+Object.values(sounds).forEach(audio=>{
+ audio.preload="auto";
+ audio.volume=1;
+});
+
+let audioUnlocked=false;
+
+function unlockAudio(){
+ if(audioUnlocked)return;
+ audioUnlocked=true;
+
+ Object.values(sounds).forEach(audio=>{
+  try{
+   audio.muted=true;
+   const promise=audio.play();
+
+   if(promise){
+    promise.then(()=>{
+     audio.pause();
+     audio.currentTime=0;
+     audio.muted=false;
+    }).catch(()=>{
+     audio.muted=false;
+    });
+   }else{
+    audio.muted=false;
+   }
+  }catch(e){
+   audio.muted=false;
+  }
+ });
 }
 
-function doAction(action){
- if(!connected)return say("RECONNECTING...");
+document.addEventListener("pointerdown",unlockAudio,{once:true});
 
- socket.emit("action",action);
+function playSound(name){
+ const original=sounds[name];
+ if(!original)return;
 
- if(action==="punch")playSound("punch");
-
- if(action==="special"){
-  const players=gameState && gameState.players;
-  const me=players && players[mySlot];
-
-  if(me){
-   if(me.character==="Salman Khan")playSound("salman");
-   if(me.character==="Shah Rukh Khan")playSound("shah");
-   if(me.character==="Amitabh Bachchan")playSound("amitabh");
-  }
+ try{
+  const audio=original.cloneNode();
+  audio.volume=1;
+  audio.play().catch(err=>{
+   console.log("Audio playback blocked:",err);
+  });
+ }catch(e){
+  console.log("Audio error:",e);
  }
 }
 
-/* HEALTH AND POWER HUD */
+/* SERVER CONFIRMED COMBAT SOUNDS */
+
+socket.on("combatEvent",event=>{
+ if(!event)return;
+
+ if(event.type==="punch"){
+  playSound("punch");
+ }
+
+ if(event.type==="special"){
+  if(event.character==="Salman Khan")playSound("salman");
+  if(event.character==="Shah Rukh Khan")playSound("shah");
+  if(event.character==="Amitabh Bachchan")playSound("amitabh");
+ }
+});
+
+function doAction(action){
+ if(!connected)return say("RECONNECTING...");
+ unlockAudio();
+ socket.emit("action",action);
+}
+
+/* HUD */
 
 function updateHUD(state){
  const players=state.players || [];
@@ -431,7 +464,7 @@ function updateHUD(state){
  });
 }
 
-/* GAME GRAPHICS */
+/* GRAPHICS */
 
 const canvas=$("game");
 const ctx=canvas.getContext("2d");
@@ -442,13 +475,30 @@ arenaImage.src="/arena.png";
 const fighterImage=new Image();
 fighterImage.src="/characters/fighters.png";
 
-function drawFighter(p,index){
- const px=Number(p.x ?? (index===0?25:75));
- const py=Number(p.y ?? 50);
+/* Smoothly follow server positions */
+const visualPositions={};
 
- /* Server position is 0-100, convert to canvas pixels */
- const x=48+(px/100)*864;
- const y=115+(py/100)*290;
+function getVisualPosition(p,index){
+ const id=p.id || String(index);
+ const targetX=Number(p.x ?? (index===0?25:75));
+ const targetY=Number(p.y ?? 50);
+
+ if(!visualPositions[id]){
+  visualPositions[id]={x:targetX,y:targetY};
+ }
+
+ const pos=visualPositions[id];
+ pos.x+=(targetX-pos.x)*0.22;
+ pos.y+=(targetY-pos.y)*0.22;
+
+ return pos;
+}
+
+function drawFighter(p,index){
+ const pos=getVisualPosition(p,index);
+
+ const x=48+(pos.x/100)*864;
+ const y=115+(pos.y/100)*290;
 
  const facing=p.facing || (index===0?1:-1);
 
@@ -457,6 +507,13 @@ function drawFighter(p,index){
                    character.includes("Amitabh")?2:0;
 
  ctx.save();
+
+ /* Fighter shadow */
+ ctx.fillStyle="#0009";
+ ctx.beginPath();
+ ctx.ellipse(x,y-4,55,13,0,0,Math.PI*2);
+ ctx.fill();
+
  ctx.translate(x,y);
  ctx.scale(facing,1);
 
@@ -487,11 +544,17 @@ function drawFighter(p,index){
 
  if(p.attacking){
   ctx.strokeStyle="#ffdc62";
-  ctx.lineWidth=12;
+  ctx.lineWidth=13;
+  ctx.lineCap="round";
   ctx.beginPath();
   ctx.moveTo(25,-90);
-  ctx.lineTo(100,-105);
+  ctx.lineTo(105,-105);
   ctx.stroke();
+
+  ctx.fillStyle="#fff0a0";
+  ctx.beginPath();
+  ctx.arc(110,-105,12,0,Math.PI*2);
+  ctx.fill();
  }
 
  ctx.restore();
@@ -517,8 +580,8 @@ function draw(){
  if(gameState && gameState.players){
   gameState.players.forEach((p,i)=>drawFighter(p,i));
  }else{
-  drawFighter({character:"Salman Khan",x:25,y:50},0);
-  drawFighter({character:"Shah Rukh Khan",x:75,y:50},1);
+  drawFighter({id:"demo1",character:"Salman Khan",x:25,y:50},0);
+  drawFighter({id:"demo2",character:"Shah Rukh Khan",x:75,y:50},1);
  }
 
  requestAnimationFrame(draw);
@@ -541,7 +604,7 @@ function updateJoystick(e){
  let dx=e.clientX-cx;
  let dy=e.clientY-cy;
 
- const max=r.width*.34;
+ const max=r.width*0.34;
  const distance=Math.hypot(dx,dy);
 
  if(distance>max){
@@ -551,11 +614,12 @@ function updateJoystick(e){
 
  stick.style.transform=`translate(${dx}px,${dy}px)`;
 
- joyDX=Math.abs(dx)<12?0:Math.sign(dx);
- joyDY=Math.abs(dy)<12?0:Math.sign(dy);
+ joyDX=Math.abs(dx)<10?0:dx/max;
+ joyDY=Math.abs(dy)<10?0:dy/max;
 }
 
 joy.addEventListener("pointerdown",e=>{
+ unlockAudio();
  joyActive=true;
  joy.setPointerCapture(e.pointerId);
  updateJoystick(e);
@@ -575,30 +639,48 @@ function stopJoystick(){
 joy.addEventListener("pointerup",stopJoystick);
 joy.addEventListener("pointercancel",stopJoystick);
 
+/* Faster movement updates */
 setInterval(()=>{
  if(connected && joyActive && (joyDX!==0 || joyDY!==0)){
   socket.emit("move",{dx:joyDX,dy:joyDY});
  }
-},100);
+},70);
 
-/* KEYBOARD CONTROLS */
+/* KEYBOARD */
+
+const keys={};
 
 window.addEventListener("keydown",e=>{
  const key=e.key.toLowerCase();
+ if(keys[key])return;
+ keys[key]=true;
 
- if(key==="a")moveKeyboard(-1,0);
- if(key==="d")moveKeyboard(1,0);
- if(key==="w")moveKeyboard(0,-1);
- if(key==="s")moveKeyboard(0,1);
  if(key==="j")doAction("punch");
  if(key==="k")doAction("block");
  if(key==="l")doAction("release");
  if(key==="i")doAction("special");
 });
 
-function moveKeyboard(dx,dy){
- if(connected)socket.emit("move",{dx:dx,dy:dy});
-}
+window.addEventListener("keyup",e=>{
+ const key=e.key.toLowerCase();
+ keys[key]=false;
+
+ if(key==="k")doAction("release");
+});
+
+setInterval(()=>{
+ if(!connected)return;
+
+ let dx=0,dy=0;
+ if(keys.a || keys.arrowleft)dx=-1;
+ if(keys.d || keys.arrowright)dx=1;
+ if(keys.w || keys.arrowup)dy=-1;
+ if(keys.s || keys.arrowdown)dy=1;
+
+ if(dx!==0 || dy!==0){
+  socket.emit("move",{dx,dy});
+ }
+},70);
 
 draw();
 </script>
