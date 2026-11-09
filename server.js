@@ -56,7 +56,9 @@ io.on("connection", socket => {
     if (r.players.length >= 2) return socket.emit("errorMessage", "Room is full!");
     if (r.started) return socket.emit("errorMessage", "Match already started!");
     r.players.push(makePlayer(socket, data || {}, 1));
-    r.message = "Both fighters are ready!";
+r.started = r.players.length === 2;
+r.winner = null;
+r.message = r.started ? "FIGHT!" : "Waiting for opponent...";
     socket.join(code); socket.data.roomCode = code; socket.data.slot = 1;
     socket.emit("joined", { code, slot: 1 }); state(code);
   });
