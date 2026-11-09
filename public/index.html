@@ -160,6 +160,91 @@ input{
     transform-origin: top left;
   }
   }
+/* ===== FLOATING FIGHTING CONTROLS ===== */
+
+#controls {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  display: block !important;
+  padding: 0 !important;
+  pointer-events: none !important;
+}
+
+.control-group {
+  display: contents !important;
+}
+
+.ctrl {
+  position: absolute !important;
+  width: clamp(48px, 6vw, 66px) !important;
+  height: clamp(48px, 6vw, 66px) !important;
+  min-width: 48px !important;
+  border-radius: 50% !important;
+  font-size: 11px !important;
+  padding: 3px !important;
+  pointer-events: auto !important;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 15px #0009, inset 0 0 12px #ffffff25 !important;
+}
+
+/* MOVEMENT - LEFT SIDE */
+
+#leftBtn {
+  left: 3%;
+  bottom: 28px;
+}
+
+#rightBtn {
+  left: calc(3% + 65px);
+  bottom: 28px;
+}
+
+#jumpBtn {
+  left: 7%;
+  bottom: 100px;
+}
+
+#crouchBtn {
+  left: calc(7% + 65px);
+  bottom: 100px;
+}
+
+#blockBtn {
+  left: 11%;
+  bottom: 172px;
+}
+
+/* ATTACKS - RIGHT SIDE */
+
+#punchBtn {
+  right: 4%;
+  bottom: 28px;
+}
+
+#kickBtn {
+  right: 4%;
+  bottom: 105px;
+}
+
+#grabBtn {
+  right: calc(4% + 72px);
+  bottom: 28px;
+}
+
+#specialBtn {
+  right: calc(4% + 72px);
+  bottom: 105px;
+  width: 72px !important;
+  height: 72px !important;
+  box-shadow: 0 0 24px #ffae00aa !important;
+}
+
+.ctrl:active {
+  transform: scale(.88) !important;
+  filter: brightness(1.7);
+}
+  
 </style>
 </head>
 
