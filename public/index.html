@@ -244,7 +244,9 @@ input{
   transform: scale(.88) !important;
   filter: brightness(1.7);
 }
-  
+#gameCanvas.superstar-shaking {
+  animation: superstarShake .38s ease;
+  }  
 </style>
 </head>
 
@@ -494,24 +496,26 @@ const impactFlash = document.createElement("div");
 impactFlash.id = "impactFlash";
 $("battleScreen").appendChild(impactFlash);
 
-function cinematicImpact(power = false) {
-  const screen = $("battleScreen");
 
-  screen.classList.remove("shaking");
+function cinematicImpact(power = false) {
+  const canvas = $("gameCanvas");
+
+  canvas.classList.remove("superstar-shaking");
   impactFlash.classList.remove("active");
 
-  void screen.offsetWidth;
+  void canvas.offsetWidth;
 
-  screen.classList.add("shaking");
+  canvas.classList.add("superstar-shaking");
   impactFlash.classList.add("active");
 
   shake = power ? 2.8 : 1.5;
 
   setTimeout(() => {
-    screen.classList.remove("shaking");
+    canvas.classList.remove("superstar-shaking");
     impactFlash.classList.remove("active");
   }, 450);
 }
+  
   
 function chooseMode(mode) {
   gameMode = mode;
