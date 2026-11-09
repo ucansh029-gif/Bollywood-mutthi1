@@ -1528,8 +1528,7 @@ function connectSocket() {
       players[attackerSlot]?.character ||
       selectedCharacter;
 
-    shake = type === "special" ? 1.8 : 0.9;
-
+    cinematicImpact(type === "special");
     if (type === "special") {
       triggerSuperpower(attackerSlot, character, defenderSlot);
     } else if (type === "punch") {
