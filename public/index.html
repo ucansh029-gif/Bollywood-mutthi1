@@ -1236,8 +1236,8 @@ function startMatchTimer() {
 function updateHUD() {
   if (players.length < 2) return;
 
-  $("p1Health").style.width = Math.max(0, players[0].hp) + "%";
-  $("p2Health").style.width = Math.max(0, players[1].hp) + "%";
+$("p1Health").style.width = Math.max(0, players[0].hp / 2) + "%";
+$("p2Health").style.width = Math.max(0, players[1].hp / 2) + "%";
 
   $("p1Meter").style.width = Math.max(0, players[0].charge) + "%";
   $("p2Meter").style.width = Math.max(0, players[1].charge) + "%";
