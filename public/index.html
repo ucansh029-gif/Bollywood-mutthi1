@@ -974,6 +974,7 @@ function spawnSparks(fighter) {
 // CINEMATIC SUPERPOWER
 // ===============================
 
+
 function triggerSuperpower(attackerSlot, character, defenderSlot) {
   if (cinematic || !fighters3D.length) return;
 
@@ -990,25 +991,28 @@ function triggerSuperpower(attackerSlot, character, defenderSlot) {
   $("cinematicSub").textContent = character.toUpperCase();
   $("cinematic").classList.add("show");
 
+  // POWER AURA
   const aura = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 24, 18),
+    new THREE.SphereGeometry(1, 32, 24),
     new THREE.MeshBasicMaterial({
       color: info.color,
       transparent: true,
-      opacity: 0.24,
+      opacity: 0.32,
       wireframe: true
     })
   );
 
-  aura.scale.set(1.2, 1.8, 1);
+  aura.scale.set(1.4, 2, 1.2);
   aura.position.set(0, 1.5, 0);
   attacker.root.add(aura);
 
+  // ENERGY SHOCKWAVE
   const shockwave = new THREE.Mesh(
-    new THREE.TorusGeometry(0.8, 0.07, 8, 40),
+    new THREE.TorusGeometry(0.8, 0.09, 12, 48),
     new THREE.MeshBasicMaterial({
       color: info.color,
-      transparent: true
+      transparent: true,
+      opacity: 0.95
     })
   );
 
@@ -1021,7 +1025,7 @@ function triggerSuperpower(attackerSlot, character, defenderSlot) {
 
   cinematic = {
     started,
-    duration: 2600,
+    duration: 5000,
     attacker,
     defender,
     aura,
@@ -1029,18 +1033,15 @@ function triggerSuperpower(attackerSlot, character, defenderSlot) {
     originalPosition
   };
 
-  shake = 1.4;
+  shake = 2.2;
   spawnSparks(attacker);
 
+  // KEEP CINEMATIC TITLE ON SCREEN
   setTimeout(() => {
     $("cinematic").classList.remove("show");
-  }, 2300);
+  }, 4700);
 }
-
-// ===============================
-// FIGHTER ANIMATION
-// ===============================
-
+  
 function updateFighterModels() {
   if (!fighters3D.length) return;
 
