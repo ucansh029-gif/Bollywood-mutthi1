@@ -55,7 +55,7 @@ function makePlayer(socket, data, slot) {
     name: String(data.name || "Player").slice(0, 18),
     character: character,
     power: CHARACTERS[character].power,
-    hp: 100,
+    hp: 200,
     charge: 0,
     x: slot === 0 ? -4 : 4,
     facing: slot === 0 ? 1 : -1,
