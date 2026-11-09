@@ -1399,8 +1399,7 @@ function applyLocalAttack(attackerSlot, type) {
   attacker.attacking = true;
   defender.attacking = false;
 
-  shake = type === "special" ? 1.8 : 0.8;
-
+  cinematicImpact(type === "special");
   spawnSparks(fighters3D[defenderSlot]);
 
   if (fighters3D[defenderSlot]) {
