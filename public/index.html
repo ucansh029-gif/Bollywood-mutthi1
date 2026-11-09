@@ -1140,49 +1140,80 @@ function createFighter3D(slot) {
 }
   
 
+
 function loadFaceTextures() {
   const image = new Image();
   image.src = "/characters/fighters.png";
 
   image.onload = () => {
-    const names = ["Salman Khan", "Shah Rukh Khan", "Amitabh Bachchan"];
+    const names = [
+      "Salman Khan",
+      "Shah Rukh Khan",
+      "Amitabh Bachchan"
+    ];
 
     fighters3D.forEach(fighter => {
       const index = names.indexOf(fighter.character);
       if (index < 0) return;
 
+      // Remove any previously attached face
+      const oldFace = fighter.head.getObjectByName("fighterFace");
+      if (oldFace) {
+        fighter.head.remove(oldFace);
+        oldFace.geometry.dispose();
+        oldFace.material.dispose();
+      }
+
       const panelWidth = image.width / 3;
+
       const canvas = document.createElement("canvas");
-      canvas.width = 256;
-      canvas.height = 256;
+      canvas.width = 512;
+      canvas.height = 512;
 
       const ctx = canvas.getContext("2d");
+
+      // Crop the selected actor portrait
       ctx.drawImage(
         image,
-        index * panelWidth, 0, panelWidth, image.height,
-        0, 0, 256, 256
+        index * panelWidth,
+        0,
+        panelWidth,
+        image.height,
+        0,
+        0,
+        512,
+        512
       );
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = 4;
+
+      const faceMaterial = new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
 
       const face = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.65, 0.72),
-        new THREE.MeshBasicMaterial({
-          map: texture,
-          transparent: true
-        })
+        new THREE.PlaneGeometry(0.66, 0.78),
+        faceMaterial
       );
 
-      face.position.set(0, 0, 0.48);
+      face.name = "fighterFace";
+      face.position.set(0, 0, 0.425);
+      face.renderOrder = 2;
+
       fighter.head.add(face);
     });
   };
-}
 
-// ===============================
-// SPARKS / IMPACT EFFECTS
-// ===============================
+  image.onerror = () => {
+    console.error("Could not load /characters/fighters.png");
+  };
+        }
+  
 
 function spawnSparks(fighter) {
   if (!fighter || !fighter.root) return;
