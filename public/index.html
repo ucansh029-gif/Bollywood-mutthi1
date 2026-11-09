@@ -864,37 +864,281 @@ function createFighter3D(slot) {
 
     legs.push(leg);
   }
+function createFighter3D(slot) {
+  const character = slot === 0
+    ? selectedCharacter
+    : (gameMode === "cpu" ? "Shah Rukh Khan" : "Salman Khan");
 
-  // ARMS AND GLOVES
+  const info = characterInfo[character] || characterInfo["Salman Khan"];
+  const root = new THREE.Group();
+
+  root.position.set(slot === 0 ? -3.3 : 3.3, 0, slot === 0 ? 0.15 : -0.15);
+  root.rotation.y = slot === 0 ? 0.15 : Math.PI - 0.15;
+  scene.add(root);
+
+  const skin = makeMaterial(
+    character === "Amitabh Bachchan" ? 0x986447 : 0xb77b55
+  );
+
+  const outfit = makeMaterial(info.color);
+  const shortsMat = makeMaterial(info.shorts);
+  const gloveMat = makeMaterial(0xc21e2b, 0.4);
+  const shoeMat = makeMaterial(0x11131a, 0.35);
+  const hairMat = makeMaterial(0x17131a);
+  const white = makeMaterial(0xf2e9d8);
+  const dark = makeMaterial(0x211717);
+  const gold = makeMaterial(0xd6a437, 0.35, 0.55);
+
+  const body = new THREE.Group();
+  body.position.y = 1.55;
+  root.add(body);
+
+  // MUSCULAR TORSO
+  const torso = addPart(
+    body,
+    new THREE.CapsuleGeometry(0.53, 0.85, 8, 16),
+    outfit, 0, 0, 0
+  );
+  torso.scale.set(1.12, 1, 0.85);
+
+  // CHEST MUSCLES AND SHOULDERS
+  for (const side of [-1, 1]) {
+    const chest = addPart(
+      body,
+      new THREE.SphereGeometry(0.32, 20, 16),
+      outfit, side * 0.28, 0.36, 0.25
+    );
+    chest.scale.set(1.25, 0.75, 0.8);
+
+    addPart(
+      body,
+      new THREE.SphereGeometry(0.32, 18, 14),
+      outfit, side * 0.55, 0.38, 0
+    );
+
+    // ABS
+    for (let row = 0; row < 2; row++) {
+      const abs = addPart(
+        body,
+        new THREE.SphereGeometry(0.16, 14, 12),
+        outfit, side * 0.15, -0.25 - row * 0.23, 0.38
+      );
+      abs.scale.set(0.95, 0.65, 0.45);
+    }
+  }
+
+  // NECK
+  addPart(
+    body,
+    new THREE.CylinderGeometry(0.16, 0.2, 0.34, 16),
+    skin, 0, 0.76, 0
+  );
+
+  // HEAD
+  const head = new THREE.Group();
+  head.position.set(0, 1.22, 0);
+  body.add(head);
+
+  const headMesh = addPart(
+    head,
+    new THREE.SphereGeometry(0.46, 32, 24),
+    skin, 0, 0, 0
+  );
+  headMesh.scale.set(0.92, 1.12, 0.92);
+
+  // HAIR CAP
+  const hair = addPart(
+    head,
+    new THREE.SphereGeometry(
+      0.475, 32, 20, 0, Math.PI * 2, 0, Math.PI * 0.53
+    ),
+    hairMat, 0, 0.18, -0.035
+  );
+  hair.scale.set(1.04, 0.9, 1);
+
+  // SIDE HAIR
+  for (const side of [-1, 1]) {
+    addPart(
+      head,
+      new THREE.BoxGeometry(0.11, 0.27, 0.18),
+      hairMat, side * 0.39, 0.02, 0.02
+    );
+  }
+
+  // EARS
+  for (const side of [-1, 1]) {
+    addPart(
+      head,
+      new THREE.SphereGeometry(0.09, 16, 12),
+      skin, side * 0.44, -0.02, 0
+    );
+  }
+
+  // EYEBROWS
+  for (const side of [-1, 1]) {
+    const brow = addPart(
+      head,
+      new THREE.BoxGeometry(0.17, 0.045, 0.045),
+      hairMat, side * 0.16, 0.16, 0.395
+    );
+    brow.rotation.z = side * -0.12;
+  }
+
+  // EYES
+  for (const side of [-1, 1]) {
+    addPart(
+      head,
+      new THREE.SphereGeometry(0.055, 16, 12),
+      white, side * 0.16, 0.075, 0.405
+    );
+
+    addPart(
+      head,
+      new THREE.SphereGeometry(0.027, 12, 10),
+      dark, side * 0.16, 0.075, 0.45
+    );
+  }
+
+  // NOSE
+  addPart(
+    head,
+    new THREE.ConeGeometry(0.075, 0.18, 12),
+    skin, 0, -0.035, 0.44
+  );
+
+  // MOUTH
+  addPart(
+    head,
+    new THREE.BoxGeometry(0.18, 0.035, 0.025),
+    dark, 0, -0.2, 0.414
+  );
+
+  // AMITABH-STYLE MOUSTACHE DETAIL
+  if (character === "Amitabh Bachchan") {
+    for (const side of [-1, 1]) {
+      const moustache = addPart(
+        head,
+        new THREE.SphereGeometry(0.09, 14, 10),
+        hairMat, side * 0.075, -0.145, 0.42
+      );
+      moustache.scale.set(1.1, 0.35, 0.35);
+    }
+  }
+
+  // BOXING BELT
+  addPart(
+    body,
+    new THREE.BoxGeometry(0.86, 0.12, 0.7),
+    gold, 0, -0.55, 0
+  );
+
+  // BELT BUCKLE
+  addPart(
+    body,
+    new THREE.BoxGeometry(0.19, 0.16, 0.08),
+    gold, 0, -0.55, 0.38
+  );
+
+  // LEGS
+  const legs = [];
+
+  for (const side of [-1, 1]) {
+    const leg = new THREE.Group();
+    leg.position.set(side * 0.27, 0.48, 0);
+    root.add(leg);
+
+    const upperLeg = addPart(
+      leg,
+      new THREE.CapsuleGeometry(0.22, 0.55, 6, 14),
+      shortsMat, 0, -0.23, 0
+    );
+    upperLeg.scale.set(1.05, 1, 1);
+
+    addPart(
+      leg,
+      new THREE.CapsuleGeometry(0.17, 0.58, 6, 14),
+      skin, 0, -0.91, 0
+    );
+
+    // KNEE PADS
+    addPart(
+      leg,
+      new THREE.SphereGeometry(0.18, 16, 12),
+      skin, 0, -0.61, 0.08
+    );
+
+    // SHOES
+    const shoe = addPart(
+      leg,
+      new THREE.BoxGeometry(0.39, 0.19, 0.62),
+      shoeMat, 0, -1.35, 0.13
+    );
+    shoe.rotation.x = -0.08;
+
+    legs.push(leg);
+  }
+
+  // ARMS AND BOXING GLOVES
   const arms = [];
-  for (let side of [-1, 1]) {
+
+  for (const side of [-1, 1]) {
     const arm = new THREE.Group();
-    arm.position.set(side * 0.62, 0.4, 0);
+    arm.position.set(side * 0.61, 0.38, 0);
     body.add(arm);
 
-    addPart(arm, new THREE.CapsuleGeometry(0.19, 0.52, 5, 10), skin, 0, -0.35, 0);
+    // UPPER ARM
+    addPart(
+      arm,
+      new THREE.CapsuleGeometry(0.19, 0.43, 6, 14),
+      skin, 0, -0.28, 0
+    );
 
-    addPart(arm, new THREE.SphereGeometry(0.23, 12, 10), skin, 0, -0.68, 0);
+    // ELBOW
+    addPart(
+      arm,
+      new THREE.SphereGeometry(0.19, 16, 12),
+      skin, 0, -0.57, 0
+    );
 
-    addPart(arm, new THREE.SphereGeometry(0.29, 16, 12), gloveMat, 0, -0.9, 0.12);
+    // FOREARM
+    addPart(
+      arm,
+      new THREE.CapsuleGeometry(0.17, 0.37, 6, 14),
+      skin, 0, -0.73, 0.04
+    );
 
-    addPart(arm, new THREE.BoxGeometry(0.38, 0.13, 0.3), white, 0, -0.68, 0.12);
+    // GLOVE CUFF
+    addPart(
+      arm,
+      new THREE.CylinderGeometry(0.2, 0.18, 0.16, 16),
+      white, 0, -0.85, 0.08
+    );
+
+    // BOXING GLOVE
+    const glove = addPart(
+      arm,
+      new THREE.SphereGeometry(0.27, 20, 16),
+      gloveMat, 0, -1.04, 0.13
+    );
+    glove.scale.set(1.05, 1.12, 1.12);
 
     arms.push(arm);
   }
 
   return {
-    root, body, head, arms, legs,
-    character, slot,
+    root,
+    body,
+    head,
+    arms,
+    legs,
+    character,
+    slot,
     baseY: 0,
     hitFlash: 0,
     aura: null
   };
 }
-
-// ===============================
-// FACE TEXTURES
-// ===============================
+  
 
 function loadFaceTextures() {
   const image = new Image();
