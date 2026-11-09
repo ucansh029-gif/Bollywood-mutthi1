@@ -148,7 +148,18 @@ input{
 @media(max-height:430px){
   .ctrl{width:37px;height:37px}
   #controls{padding-bottom:4px}
-}
+}@media (orientation: portrait) {
+  #battleScreen {
+    width: 100dvh !important;
+    height: 100vw !important;
+    left: 100vw !important;
+    top: 0 !important;
+    right: auto !important;
+    bottom: auto !important;
+    transform: rotate(90deg);
+    transform-origin: top left;
+  }
+  }
 </style>
 </head>
 
