@@ -6,8 +6,7 @@
 <title>SUPERSTAR SHOWDOWN</title>
 
 <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.146.0/three.min.js"></script>
 <style>
 *{box-sizing:border-box}
 html,body{
@@ -210,7 +209,27 @@ button{cursor:pointer}
  .fighter-face{height:95px}
  .ctrl{width:45px;height:45px}
  #controls{bottom:5px}
+}#controls{
+ padding:0 8px 8px;
+ gap:5px;
+ align-items:end;
 }
+.control-group{
+ gap:5px;
+ flex-wrap:wrap;
+}
+.ctrl{
+ width:clamp(38px,8vw,54px);
+ height:clamp(38px,8vw,54px);
+ min-width:38px;
+ font-size:11px;
+ border-width:1px;
+}
+@media(max-width:700px){
+ #controls{padding:0 5px 5px}
+ .control-group{gap:4px}
+ .ctrl{width:42px;height:42px;font-size:10px}
+ }
 </style>
 </head>
 
