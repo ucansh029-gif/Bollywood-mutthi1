@@ -454,6 +454,65 @@ function say(message) {
   $("fightMessage").textContent = message;
 }
 
+// ===== CINEMATIC IMPACT EFFECTS =====
+
+const impactStyle = document.createElement("style");
+impactStyle.textContent = `
+@keyframes superstarShake {
+  0%,100% { transform: translate(0,0) }
+  10% { transform: translate(-9px,5px) }
+  20% { transform: translate(9px,-5px) }
+  30% { transform: translate(-7px,-4px) }
+  40% { transform: translate(7px,4px) }
+  50% { transform: translate(-5px,2px) }
+  60% { transform: translate(5px,-2px) }
+  70% { transform: translate(-3px,1px) }
+}
+@keyframes superstarFlash {
+  0% { opacity:0 }
+  15% { opacity:.85 }
+  100% { opacity:0 }
+}
+#impactFlash {
+  position:absolute;
+  inset:0;
+  z-index:7;
+  pointer-events:none;
+  opacity:0;
+  background:radial-gradient(circle,#ffffffaa,transparent 70%);
+}
+#impactFlash.active {
+  animation:superstarFlash .35s ease-out;
+}
+#battleScreen.shaking {
+  animation:superstarShake .38s ease;
+}
+`;
+document.head.appendChild(impactStyle);
+
+const impactFlash = document.createElement("div");
+impactFlash.id = "impactFlash";
+$("battleScreen").appendChild(impactFlash);
+
+function cinematicImpact(power = false) {
+  const screen = $("battleScreen");
+
+  screen.classList.remove("shaking");
+  impactFlash.classList.remove("active");
+
+  void screen.offsetWidth;
+
+  screen.classList.add("shaking");
+  impactFlash.classList.add("active");
+
+  shake = power ? 2.8 : 1.5;
+
+  setTimeout(() => {
+    screen.classList.remove("shaking");
+    impactFlash.classList.remove("active");
+  }, 450);
+}
+  
 function chooseMode(mode) {
   gameMode = mode;
   showScreen("selectScreen");
