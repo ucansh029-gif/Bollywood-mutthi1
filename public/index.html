@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,18 +7,14 @@
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.149.0/three.min.js"></script>
 <style>
-*{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070814;color:white;font-family:Arial,sans-serif;touch-action:none}
-button,input{font:inherit}
-button{border:0;cursor:pointer;color:white;font-weight:900;touch-action:manipulation}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#070814;color:#fff;font-family:Arial,sans-serif;touch-action:none}
+button,input{font:inherit}button{border:0;color:white;font-weight:900;cursor:pointer;touch-action:manipulation}
 #app{position:fixed;inset:0;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#33204e,#090b19 75%)}
 #top{height:42px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#080914;border-bottom:1px solid #684b83;position:relative;z-index:10}
 .logo{font-size:clamp(15px,3vw,25px);font-weight:1000;letter-spacing:2px;color:#ffd35a;text-shadow:0 0 14px #ff5a00}
 #tagline{font-size:10px;letter-spacing:2px;color:#aaa}
-.screen{position:absolute;inset:42px 0 0;display:none}
-.screen.active{display:block}
-#home{overflow:auto;padding:10px 3vw}
-.hero{text-align:center;margin:2px 0 10px}
+.screen{position:absolute;inset:42px 0 0;display:none}.screen.active{display:block}
+#home{overflow:auto;padding:10px 3vw}.hero{text-align:center;margin:2px 0 10px}
 .hero h1{font-size:clamp(25px,5vw,48px);margin:2px;color:#ffd35a;text-shadow:0 0 20px #ff6500}
 .hero p{font-size:clamp(9px,1.4vw,13px);letter-spacing:2px;color:#d3c6df;margin:4px}
 .lobby{max-width:1050px;margin:auto;display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
@@ -29,25 +24,19 @@ button{border:0;cursor:pointer;color:white;font-weight:900;touch-action:manipula
 .char{min-width:0;background:#20223a;border:2px solid #51436c;border-radius:10px;padding:6px 4px;overflow:hidden}
 .char.selected{border-color:#ffd34c;background:#4c381c;box-shadow:0 0 18px #ffb52c88}
 .portrait{height:clamp(80px,15vw,145px);border-radius:7px;background:linear-gradient(145deg,#5c3d77,#11172c);margin-bottom:6px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.portrait img{width:100%;height:100%;object-fit:contain}
-.char b{display:block;font-size:clamp(9px,1.5vw,14px)}
-.char small{display:block;color:#ffd35a;font-size:clamp(8px,1.2vw,11px);margin-top:4px}
+.portrait img{width:100%;height:100%;object-fit:cover}
+.char b{display:block;font-size:clamp(9px,1.5vw,14px)}.char small{display:block;color:#ffd35a;font-size:clamp(8px,1.2vw,11px);margin-top:4px}
 input{width:100%;padding:11px;border-radius:8px;border:1px solid #68588a;background:#090d1d;color:white;margin:5px 0;outline:none}
 .primary,.secondary{width:100%;padding:12px;border-radius:9px;margin:4px 0}
-.primary{background:linear-gradient(90deg,#ff8a00,#dc263e);box-shadow:0 4px 14px #ff500044}
-.secondary{background:#40345f}
+.primary{background:linear-gradient(90deg,#ff8a00,#dc263e);box-shadow:0 4px 14px #ff500044}.secondary{background:#40345f}
 #status{font-size:12px;color:#c6b9d8;min-height:18px;margin-top:7px}
-#battle{background:#080914}
-#game{position:absolute;inset:0}
-#game canvas{width:100%;height:100%;display:block}
+#battle{background:#080914}#game{position:absolute;inset:0}#game canvas{width:100%;height:100%;display:block}
 #hud{position:absolute;z-index:4;top:7px;left:2%;right:2%;display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;pointer-events:none}
-.hudbox{background:#090b18dd;padding:7px;border:1px solid #76628e;border-radius:9px}
-.hudbox.right{text-align:right}
+.hudbox{background:#090b18dd;padding:7px;border:1px solid #76628e;border-radius:9px}.hudbox.right{text-align:right}
 .playername{font-size:clamp(10px,2vw,16px);font-weight:1000;color:#ffd35a}
 .health{height:12px;background:#45202d;border:1px solid #986477;border-radius:20px;overflow:hidden;margin-top:5px}
 .health span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#f22,#ffbd2f);transition:width .2s}
-.meter{height:5px;background:#30234c;margin-top:4px;border-radius:8px;overflow:hidden}
-.meter span{display:block;height:100%;width:0;background:#43eaff}
+.meter{height:5px;background:#30234c;margin-top:4px;border-radius:8px;overflow:hidden}.meter span{display:block;height:100%;width:0;background:#43eaff}
 #round{font-size:clamp(11px,2vw,20px);font-weight:1000;color:#ffd35a;text-align:center;text-shadow:0 0 10px #ff6c00}
 #roomTag{position:absolute;z-index:5;top:76px;left:50%;transform:translateX(-50%);font-size:10px;background:#080914bb;padding:5px 12px;border-radius:20px}
 #controls{position:absolute;z-index:6;bottom:8px;left:0;right:0;display:flex;justify-content:space-between;align-items:end;padding:0 3%;pointer-events:none}
@@ -60,54 +49,26 @@ input{width:100%;padding:11px;border-radius:8px;border:1px solid #68588a;backgro
 #message{position:absolute;z-index:8;left:50%;top:45%;transform:translate(-50%,-50%);font-size:clamp(23px,5vw,52px);font-weight:1000;color:#ffd34c;text-shadow:0 0 22px #ff4c00;text-align:center;pointer-events:none;white-space:nowrap}
 #exit{position:absolute;z-index:9;right:8px;top:8px;background:#332348;padding:8px 13px;border-radius:8px}
 #fatal{display:none;position:absolute;z-index:20;inset:0;background:#100b19;padding:24px;overflow:auto}
-#fatal h2{color:#ff6969}
-#fatal pre{white-space:pre-wrap;font-size:12px;color:#ffd2a3}
-@media(orientation:portrait){
- #app{width:100dvh;height:100vw;inset:0 auto auto 100vw;transform:rotate(90deg);transform-origin:top left}
-}
-@media(max-height:430px){
- #top{height:32px}
- .screen{inset:32px 0 0}
- #home{padding:4px 3vw}
- .hero{margin:0 0 4px}
- .panel{padding:7px}
- .portrait{height:65px}
-}
+#fatal h2{color:#ff6969}#fatal pre{white-space:pre-wrap;font-size:12px;color:#ffd2a3}
+@media(orientation:portrait){#app{width:100dvh;height:100vw;inset:0 auto auto 100vw;transform:rotate(90deg);transform-origin:top left}}
+@media(max-height:430px){#top{height:32px}.screen{inset:32px 0 0}#home{padding:4px 3vw}.hero{margin:0 0 4px}.panel{padding:7px}.portrait{height:65px}}
 </style>
 </head>
 <body>
 <div id="app">
-<header id="top">
- <div class="logo">🥊 SUPERSTAR SHOWDOWN</div>
- <div id="tagline">BOLLYWOOD BOXING CHAMPIONSHIP</div>
-</header>
-
+<header id="top"><div class="logo">🥊 SUPERSTAR SHOWDOWN</div><div id="tagline">BOLLYWOOD BOXING CHAMPIONSHIP</div></header>
 <section id="home" class="screen active">
- <div class="hero">
-  <h1>SUPERSTAR SHOWDOWN</h1>
-  <p>CHOOSE YOUR STAR • FIGHT YOUR RIVAL • BECOME THE CHAMPION</p>
- </div>
+ <div class="hero"><h1>SUPERSTAR SHOWDOWN</h1><p>CHOOSE YOUR STAR • FIGHT YOUR RIVAL • BECOME THE CHAMPION</p></div>
  <div class="lobby">
-  <div class="panel">
-   <h2>⚡ SELECT YOUR SUPERSTAR</h2>
+  <div class="panel"><h2>⚡ SELECT YOUR SUPERSTAR</h2>
    <div id="characters">
-    <button class="char selected" data-char="salman">
-     <div class="portrait"><img src="/characters/fighters.png" style="object-position:left;object-fit:cover" onerror="this.style.display='none'"></div>
-     <b>SALMAN KHAN</b><small>BHAIJAAN POWER</small>
-    </button>
-    <button class="char" data-char="srk">
-     <div class="portrait"><img src="/characters/fighters.png" style="object-position:center;object-fit:cover" onerror="this.style.display='none'"></div>
-     <b>SHAH RUKH KHAN</b><small>KING KHAN POWER</small>
-    </button>
-    <button class="char" data-char="amitabh">
-     <div class="portrait"><img src="/characters/fighters.png" style="object-position:right;object-fit:cover" onerror="this.style.display='none'"></div>
-     <b>AMITABH BACHCHAN</b><small>BIG B POWER</small>
-    </button>
+    <button class="char selected" data-char="salman"><div class="portrait"><img src="/characters/fighters.png" style="object-position:left" onerror="this.style.display='none'"></div><b>SALMAN KHAN</b><small>BHAIJAAN POWER</small></button>
+    <button class="char" data-char="srk"><div class="portrait"><img src="/characters/fighters.png" style="object-position:center" onerror="this.style.display='none'"></div><b>SHAH RUKH KHAN</b><small>KING KHAN POWER</small></button>
+    <button class="char" data-char="amitabh"><div class="portrait"><img src="/characters/fighters.png" style="object-position:right" onerror="this.style.display='none'"></div><b>AMITABH BACHCHAN</b><small>BIG B POWER</small></button>
    </div>
    <input id="playerName" maxlength="14" placeholder="ENTER YOUR FIGHTER NAME">
   </div>
-  <div class="panel">
-   <h2>🏆 ENTER THE ARENA</h2>
+  <div class="panel"><h2>🏆 ENTER THE ARENA</h2>
    <button class="primary" id="createBtn">CREATE ROOM</button>
    <input id="roomCode" maxlength="8" placeholder="ENTER ROOM CODE">
    <button class="secondary" id="joinBtn">JOIN ROOM</button>
@@ -116,351 +77,182 @@ input{width:100%;padding:11px;border-radius:8px;border:1px solid #68588a;backgro
   </div>
  </div>
 </section>
-
 <section id="battle" class="screen">
  <div id="game"></div>
  <div id="hud">
-  <div class="hudbox">
-   <div class="playername" id="p1name">PLAYER 1</div>
-   <div class="health"><span id="p1hp"></span></div>
-   <div class="meter"><span id="p1charge"></span></div>
-  </div>
+  <div class="hudbox"><div class="playername" id="p1name">PLAYER 1</div><div class="health"><span id="p1hp"></span></div><div class="meter"><span id="p1charge"></span></div></div>
   <div id="round">ROUND 1</div>
-  <div class="hudbox right">
-   <div class="playername" id="p2name">PLAYER 2</div>
-   <div class="health"><span id="p2hp"></span></div>
-   <div class="meter"><span id="p2charge"></span></div>
-  </div>
+  <div class="hudbox right"><div class="playername" id="p2name">PLAYER 2</div><div class="health"><span id="p2hp"></span></div><div class="meter"><span id="p2charge"></span></div></div>
  </div>
- <div id="roomTag">ROOM: <span id="roomLabel">------</span></div>
- <button id="exit">EXIT</button>
- <div id="message">WAITING FOR OPPONENT</div>
- <div id="controls">
-  <div id="stickArea"><div id="stick"></div></div>
+ <div id="roomTag">ROOM: <span id="roomLabel">------</span></div><button id="exit">EXIT</button><div id="message">WAITING FOR OPPONENT</div>
+ <div id="controls"><div id="stickArea"><div id="stick"></div></div>
   <div id="buttons">
-   <button class="action" data-action="block">BLOCK</button>
-   <button class="action red" data-action="punch">PUNCH</button>
-   <button class="action red" data-action="kick">KICK</button>
-   <button class="action" data-action="grab">GRAB</button>
-   <button class="action gold" data-action="special">SUPER</button>
-   <button class="action" data-action="release">RELEASE</button>
+   <button class="action" data-action="block">BLOCK</button><button class="action red" data-action="punch">PUNCH</button><button class="action red" data-action="kick">KICK</button>
+   <button class="action" data-action="grab">GRAB</button><button class="action gold" data-action="special">SUPER</button><button class="action" data-action="release">RELEASE</button>
   </div>
  </div>
 </section>
-
-<div id="fatal">
- <h2>GAME LOADING ERROR</h2>
- <p id="fatalText"></p>
- <pre id="fatalDetails"></pre>
- <button class="primary" onclick="location.reload()">RELOAD GAME</button>
+<div id="fatal"><h2>GAME LOADING ERROR</h2><p id="fatalText"></p><pre id="fatalDetails"></pre><button class="primary" onclick="location.reload()">RELOAD GAME</button></div>
 </div>
-</div>
-
-<script>
-"use strict";
+<script>"use strict";
 const $=id=>document.getElementById(id);
-let socket=null,selectedCharacter="salman",roomCode="",mySlot=0;
-let scene,camera,renderer,clock,models=[],running=false,raf=0;
-let lastWinner=null,particles=[];
-const soundFiles={
- punch:"/punch.mp3",
- defeat:"/defeat.mp3",
- salman:"/le-re-lund-ke.mp3",
- srk:"/shahrukh-khan-call.mp3",
- amitabh:"/ma-ka-bhosda-aag.mp3"
-};
+let socket=null,selectedCharacter="salman",roomCode="",scene,camera,renderer,clock,models=[],running=false,particles=[];
+let lastWinner=null;
+const characterNames={salman:"Salman Khan",srk:"Shah Rukh Khan",amitabh:"Amitabh Bachchan"};
+const soundFiles={punch:"/punch.mp3",defeat:"/defeat.mp3",salman:"/le-re-lund-ke.mp3",srk:"/shahrukh-khan-call.mp3",amitabh:"/ma-ka-bhosda-aag.mp3"};
 function say(t){$("status").textContent=t}
-function fatal(t,d=""){
- $("fatal").style.display="block";
- $("fatalText").textContent=t;
- $("fatalDetails").textContent=d;
-}
-function play(file,volume=.85){
- try{const a=new Audio(file);a.volume=volume;a.play().catch(()=>{});}catch(e){}
-}
-function landscape(){
- try{
-  if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
-  if(screen.orientation?.lock)screen.orientation.lock("landscape").catch(()=>{});
- }catch(e){}
-}
+function fatal(t,d=""){$("fatal").style.display="block";$("fatalText").textContent=t;$("fatalDetails").textContent=d}
+function play(file,volume=.85){try{const a=new Audio(file);a.volume=volume;a.play().catch(()=>{})}catch(e){}}
+function landscape(){try{if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});if(screen.orientation?.lock)screen.orientation.lock("landscape").catch(()=>{})}catch(e){}}
 $("fullscreenBtn").onclick=landscape;
-document.querySelectorAll(".char").forEach(b=>{
- b.onclick=()=>{
-  document.querySelectorAll(".char").forEach(x=>x.classList.remove("selected"));
-  b.classList.add("selected");selectedCharacter=b.dataset.char;
- };
-});
+document.querySelectorAll(".char").forEach(b=>b.onclick=()=>{document.querySelectorAll(".char").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");selectedCharacter=b.dataset.char});
 function connect(){
  if(socket)return;
- if(typeof io!=="function"){say("Socket client failed to load. Check internet.");return;}
- socket=io(window.location.origin);
+ if(typeof io!=="function"){say("Socket client failed to load. Check internet.");return}
+ socket=io(window.location.origin,{transports:["polling","websocket"],reconnection:true,timeout:20000});
  socket.on("connect",()=>say("Connected! Create a room or join your friend."));
  socket.on("connect_error",e=>say("Connection error: "+e.message));
- socket.on("disconnect",()=>say("Disconnected. Reconnecting..."));
+ socket.on("disconnect",reason=>say("Disconnected: "+reason+". Reconnecting..."));
  socket.on("joined",d=>{
-  roomCode=d.code||roomCode;
-  mySlot=d.slot||0;
-  $("roomLabel").textContent=roomCode;
-  $("home").classList.remove("active");
-  $("battle").classList.add("active");
-  $("message").textContent="WAITING FOR OPPONENT";
+  roomCode=d.code||roomCode;$("roomLabel").textContent=roomCode;
+  $("home").classList.remove("active");$("battle").classList.add("active");$("message").textContent="WAITING FOR OPPONENT";
   landscape();init3D();
  });
  socket.on("errorMessage",m=>say(String(m)));
  socket.on("state",s=>{
-  if(s.code){roomCode=s.code;$("roomLabel").textContent=roomCode;}
+  if(s.code){roomCode=s.code;$("roomLabel").textContent=roomCode}
   updateHUD(s);
-  if(s.started){
-   $("message").textContent="";
-   if(!running)init3D();
-  }else $("message").textContent=s.message||"WAITING FOR OPPONENT";
+  if(s.started){$("message").textContent="";if(!running)init3D()}else $("message").textContent=s.message||"WAITING FOR OPPONENT";
   updateFighters(s);
-  if(s.winner&&s.winner!==lastWinner){
-   lastWinner=s.winner;
-   const win=s.players?.find(p=>p.id===s.winner);
-   $("message").textContent=win?(win.name+" WINS! 🏆"):"KNOCKOUT!";
-   play(soundFiles.defeat);
-   burst(0,1,0,0xffd34c,35);
-  }
+  if(s.winner&&s.winner!==lastWinner){lastWinner=s.winner;$("message").textContent=s.winner+" WINS! 🏆";play(soundFiles.defeat);burst(0,1,0,0xffd34c,35)}
  });
  socket.on("combatEvent",e=>{
-  const p=e.slot===0?models[0]:models[1];
-  if(e.type==="special"){
-   play(soundFiles[e.character]||soundFiles.punch);
-   if(p)burst(p.position.x,1,p.position.z,0xffd34c,45);
-  }else{
-   play(soundFiles.punch,.65);
-   if(p)burst(p.position.x,1,p.position.z,0xff653c,12);
-  }
+  const p=models[e.slot];
+  if(e.type==="special"){play(soundFiles[e.character==="Salman Khan"?"salman":e.character==="Shah Rukh Khan"?"srk":"amitabh"]||soundFiles.punch);if(p)burst(p.position.x,1,p.position.z,0xffd34c,45)}
+  else{play(soundFiles.punch,.65);if(p)burst(p.position.x,1,p.position.z,0xff653c,12)}
  });
 }
-function getPlayer(){
- const name=$("playerName").value.trim();
- if(!name){say("Enter your fighter name first!");return null;}
- return {name,character:selectedCharacter};
-}
-$("createBtn").onclick=()=>{
- landscape();connect();
- const p=getPlayer();if(!p)return;
- if(!socket.connected){say("Connecting... tap CREATE ROOM again.");return;}
- socket.emit("createRoom",p);
-};
-$("joinBtn").onclick=()=>{
- landscape();connect();
- const p=getPlayer();if(!p)return;
- const code=$("roomCode").value.trim().toUpperCase();
- if(!code){say("Enter your room code.");return;}
- if(!socket.connected){say("Connecting... tap JOIN ROOM again.");return;}
- socket.emit("joinRoom",{code,name:p.name,character:p.character});
-};
-$("exit").onclick=()=>{if(confirm("Leave this match?"))location.reload();};
-
-function updateHUD(s){
- const ps=s.players||[];
- for(let i=0;i<2;i++){
-  const p=ps[i];if(!p)continue;
-  $("p"+(i+1)+"name").textContent=p.name||"FIGHTER";
-  $("p"+(i+1)+"hp").style.width=Math.max(0,p.hp??100)+"%";
-  $("p"+(i+1)+"charge").style.width=Math.max(0,p.charge||0)+"%";
- }
- $("round").textContent=s.started?"FIGHT!":"ROUND 1";
-}
-
+function getPlayer(){const name=$("playerName").value.trim();if(!name){say("Enter your fighter name first!");return null}return{name,character:characterNames[selectedCharacter]}}
+$("createBtn").onclick=()=>{landscape();connect();const p=getPlayer();if(!p)return;if(!socket.connected){say("Connecting... tap CREATE ROOM again when connected.");return}socket.emit("createRoom",p)};
+$("joinBtn").onclick=()=>{landscape();connect();const p=getPlayer();if(!p)return;const code=$("roomCode").value.trim().toUpperCase();if(!code){say("Enter your room code.");return}if(!socket.connected){say("Connecting... tap JOIN ROOM again when connected.");return}socket.emit("joinRoom",{code,...p})};
+$("exit").onclick=()=>{if(confirm("Leave this match?"))location.reload()};
+function updateHUD(s){const ps=s.players||[];for(let i=0;i<2;i++){const p=ps[i];if(!p)continue;$("p"+(i+1)+"name").textContent=p.name||"FIGHTER";$("p"+(i+1)+"hp").style.width=Math.max(0,p.hp??100)+"%";$("p"+(i+1)+"charge").style.width=Math.max(0,p.charge||0)+"%"}$("round").textContent=s.started?"FIGHT!":"ROUND 1"}
 function fighterModel(index){
- const g=new THREE.Group();
- const colors=[0xb92336,0x244dbb];
- const accents=[0xffc348,0x50e4ff];
- const main=new THREE.MeshStandardMaterial({color:colors[index],roughness:.55});
- const trim=new THREE.MeshStandardMaterial({color:accents[index],metalness:.3,roughness:.4});
- const skin=new THREE.MeshStandardMaterial({color:0xc58d68});
- function box(w,h,d,mat,x,y,z){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
-  m.position.set(x,y,z);m.castShadow=true;g.add(m);return m;
- }
- function sphere(r,mat,x,y,z){
-  const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);
-  m.position.set(x,y,z);m.castShadow=true;g.add(m);return m;
- }
- box(.76,.82,.4,main,0,1.34,0);
- box(.8,.15,.44,trim,0,1.76,0);
- const head=sphere(.29,skin,0,2.02,0);
- sphere(.31,main,0,2.22,-.02);
- box(.4,.1,.33,trim,0,1.96,.19);
+ const g=new THREE.Group(),colors=[0xb92336,0x244dbb],accents=[0xffc348,0x50e4ff];
+ const main=new THREE.MeshStandardMaterial({color:colors[index],roughness:.55}),trim=new THREE.MeshStandardMaterial({color:accents[index],metalness:.3,roughness:.4}),skin=new THREE.MeshStandardMaterial({color:0xc58d68});
+ function box(w,h,d,mat,x,y,z){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;g.add(m);return m}
+ function sphere(r,mat,x,y,z){const m=new THREE.Mesh(new THREE.SphereGeometry(r,18,14),mat);m.position.set(x,y,z);m.castShadow=true;g.add(m);return m}
+ box(.76,.82,.4,main,0,1.34,0);box(.8,.15,.44,trim,0,1.76,0);sphere(.29,skin,0,2.02,0);sphere(.31,main,0,2.22,-.02);box(.4,.1,.33,trim,0,1.96,.19);
  const arms=[],legs=[];
- for(const side of [-1,1]){
-  const arm=box(.23,.58,.23,main,side*.53,1.35,0);
-  const fist=sphere(.17,skin,side*.55,1.03,.15);
-  arms.push({arm,fist,side});
-  const leg=box(.27,.75,.29,trim,side*.2,.43,0);
-  const foot=box(.38,.15,.48,main,side*.2,.08,.08);
-  legs.push({leg,foot,side});
- }
- const ring=new THREE.Mesh(new THREE.TorusGeometry(.58,.025,8,32),trim);
- ring.rotation.x=Math.PI/2;ring.position.y=.04;g.add(ring);
- g.userData.arms=arms;g.userData.legs=legs;
- g.userData.baseY=0;g.userData.hitUntil=0;
- return g;
+ for(const side of [-1,1]){const arm=box(.23,.58,.23,main,side*.53,1.35,0),fist=sphere(.17,skin,side*.55,1.03,.15);arms.push({arm,fist,side});const leg=box(.27,.75,.29,trim,side*.2,.43,0);box(.38,.15,.48,main,side*.2,.08,.08);legs.push({leg,side})}
+ const ring=new THREE.Mesh(new THREE.TorusGeometry(.58,.025,8,32),trim);ring.rotation.x=Math.PI/2;ring.position.y=.04;g.add(ring);
+ g.userData.arms=arms;g.userData.legs=legs;g.userData.targetX=index===0?-3:3;g.userData.targetY=0;return g
 }
-
 function setupArena(){
- const floorMat=new THREE.MeshStandardMaterial({color:0x28243d,roughness:.8});
- const floor=new THREE.Mesh(new THREE.BoxGeometry(19,.25,8),floorMat);
- floor.position.y=-.18;floor.receiveShadow=true;scene.add(floor);
- const mat=new THREE.MeshStandardMaterial({color:0x8e294e,metalness:.4});
- const gold=new THREE.MeshStandardMaterial({color:0xe8b84f,metalness:.5});
- for(let x=-8;x<=8;x+=4){
-  const post=new THREE.Mesh(new THREE.BoxGeometry(.16,2.4,.16),mat);
-  post.position.set(x,1,-3.35);post.castShadow=true;scene.add(post);
- }
- for(const y of [.65,1.25,1.85]){
-  const rope=new THREE.Mesh(new THREE.BoxGeometry(17,.055,.055),gold);
-  rope.position.set(0,y,-3.35);scene.add(rope);
- }
- const back=new THREE.Mesh(new THREE.PlaneGeometry(24,10),new THREE.MeshBasicMaterial({color:0x17142e}));
- back.position.set(0,4,-4.1);scene.add(back);
- // Stadium audience silhouettes
- for(let row=0;row<3;row++){
-  for(let i=0;i<45;i++){
-   const x=(i-22)*.42;
-   const y=3.1+row*.55;
-   const c=[0xffc34c,0x54d8ff,0xff496f,0xdddddd][i%4];
-   const crowd=new THREE.Mesh(
-    new THREE.SphereGeometry(.09,7,6),
-    new THREE.MeshBasicMaterial({color:c})
-   );
-   crowd.position.set(x,y,-3.95);scene.add(crowd);
-  }
- }
- // Stadium spotlights
- for(const x of [-7,-3,3,7]){
-  const light=new THREE.SpotLight(0xffdca0,3,20,Math.PI/5,.4,1);
-  light.position.set(x,8,5);light.target.position.set(x*.4,0,0);
-  scene.add(light,light.target);
- }
-}
-
-function init3D(){
+ const floor=new THREE.Mesh(new THREE.BoxGeometry(19,.25,8),new THREE.MeshStandardMaterial({color:0x28243d,roughness:.8}));floor.position.y=-.18;floor.receiveShadow=true;scene.add(floor);
+ const mat=new THREE.MeshStandardMaterial({color:0x8e294e,metalness:.4}),gold=new THREE.MeshStandardMaterial({color:0xe8b84f,metalness:.5});
+ for(let x=-8;x<=8;x+=4){const post=new THREE.Mesh(new THREE.BoxGeometry(.16,2.4,.16),mat);post.position.set(x,1,-3.35);post.castShadow=true;scene.add(post)}
+ for(const y of [.65,1.25,1.85]){const rope=new THREE.Mesh(new THREE.BoxGeometry(17,.055,.055),gold);rope.position.set(0,y,-3.35);scene.add(rope)}
+ const back=new THREE.Mesh(new THREE.PlaneGeometry(24,10),new THREE.MeshBasicMaterial({color:0x17142e}));back.position.set(0,4,-4.1);scene.add(back);
+ for(let row=0;row<3;row++)for(let i=0;i<45;i++){const crowd=new THREE.Mesh(new THREE.SphereGeometry(.09,7,6),new THREE.MeshBasicMaterial({color:[0xffc34c,0x54d8ff,0xff496f,0xdddddd][i%4]}));crowd.position.set((i-22)*.42,3.1+row*.55,-3.95);scene.add(crowd)}
+ for(const x of [-7,-3,3,7]){const light=new THREE.SpotLight(0xffdca0,3,20,Math.PI/5,.4,1);light.position.set(x,8,5);light.target.position.set(x*.4,0,0);scene.add(light,light.target)}
+}function init3D(){
  if(running)return;
- if(typeof THREE==="undefined"){fatal("3D engine failed to load.","Reload the page and check your internet.");return;}
- try{
-  const host=$("game");
-  scene=new THREE.Scene();
-  scene.background=new THREE.Color(0x101329);
-  scene.fog=new THREE.Fog(0x101329,17,32);
-  camera=new THREE.PerspectiveCamera(42,1,.1,100);
-  camera.position.set(0,7,15);camera.lookAt(0,1,0);
-  renderer=new THREE.WebGLRenderer({antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.6));
-  renderer.shadowMap.enabled=true;
-  host.innerHTML="";host.appendChild(renderer.domElement);
-  scene.add(new THREE.HemisphereLight(0xc6d6ff,0x28172d,2));
-  const sun=new THREE.DirectionalLight(0xffffff,2.5);
-  sun.position.set(-4,9,7);sun.castShadow=true;scene.add(sun);
-  setupArena();
-  models=[];
-  for(let i=0;i<2;i++){
-   const f=fighterModel(i);
-   f.position.set(i===0?-3:3,0,0);
-   f.rotation.y=i===0?Math.PI/2:-Math.PI/2;
-   scene.add(f);models.push(f);
-  }
-  clock=new THREE.Clock();
-  resize3D();
-  window.addEventListener("resize",resize3D);
-  running=true;animate();
- }catch(e){fatal("Could not start the 3D arena.",e.stack||e.message);}
+ if(typeof THREE==="undefined"){fatal("Three.js could not load","Check your internet connection and reload.");return}
+ running=true;
+ const host=$("game");
+ scene=new THREE.Scene();scene.background=new THREE.Color(0x100e20);scene.fog=new THREE.Fog(0x100e20,13,25);
+ camera=new THREE.PerspectiveCamera(43,1,.1,100);camera.position.set(0,5.3,13);camera.lookAt(0,1.2,0);
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;
+ host.appendChild(renderer.domElement);
+ scene.add(new THREE.HemisphereLight(0xc8d5ff,0x29132f,2));
+ const sun=new THREE.DirectionalLight(0xffd9ad,3);sun.position.set(-4,9,7);sun.castShadow=true;scene.add(sun);
+ setupArena();
+ models=[fighterModel(0),fighterModel(1)];
+ models.forEach((m,i)=>{m.position.set(i===0?-3:3,0,i===0?.35:-.35);m.rotation.y=i===0?Math.PI/2:-Math.PI/2;scene.add(m)});
+ resize3D();window.addEventListener("resize",resize3D);
+ clock=new THREE.Clock();animate();
 }
-function resize3D(){
- if(!renderer||!camera)return;
- const w=$("game").clientWidth,h=$("game").clientHeight;
- if(!w||!h)return;
- renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
-}
+function resize3D(){if(!renderer||!camera)return;const w=$("game").clientWidth,h=$("game").clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 function updateFighters(s){
- if(!running||!s.players)return;
- s.players.forEach((p,i)=>{
-  const m=models[i];if(!m||!p)return;
-  m.userData.targetX=THREE.MathUtils.clamp(Number(p.x)||0,-5,5);
-  m.userData.targetY=Number(p.y)||0;
-  m.userData.crouching=!!p.crouching;
-  m.userData.blocking=!!p.blocking;
-  m.userData.attacking=!!p.attacking;
-  if(p.facing!==undefined)m.rotation.y=p.facing>0?Math.PI/2:-Math.PI/2;
-  else if(p.rotationY!==undefined)m.rotation.y=p.rotationY;
- });
+ (s.players||[]).forEach((p,i)=>{const m=models[i];if(!m)return;m.userData.targetX=p.x??m.userData.targetX;m.userData.blocking=!!p.blocking;m.userData.attacking=!!p.attacking;m.userData.crouching=!!p.crouching;m.userData.jumping=!!p.jumping;m.userData.hp=p.hp??100;m.userData.facing=p.facing??(i===0?1:-1)});
 }
 function burst(x,y,z,color,count){
  if(!scene)return;
- const geo=new THREE.SphereGeometry(.055,6,6);
- for(let i=0;i<count;i++){
-  const mat=new THREE.MeshBasicMaterial({color,transparent:true});
-  const p=new THREE.Mesh(geo,mat);
-  p.position.set(x,y,z);
-  p.userData.v=new THREE.Vector3((Math.random()-.5)*.18,Math.random()*.17,(Math.random()-.5)*.18);
-  p.userData.life=1;
-  scene.add(p);particles.push(p);
- }
+ for(let i=0;i<count;i++){const mesh=new THREE.Mesh(new THREE.SphereGeometry(.045,6,6),new THREE.MeshBasicMaterial({color}));mesh.position.set(x,y,z);mesh.userData.velocity=new THREE.Vector3((Math.random()-.5)*.18,Math.random()*.18,(Math.random()-.5)*.15);mesh.userData.life=1;scene.add(mesh);particles.push(mesh)}
 }
 function animate(){
  if(!running)return;
- raf=requestAnimationFrame(animate);
- const t=clock.getElapsedTime(),dt=Math.min(clock.getDelta(),.04);
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),.04),t=clock.elapsedTime;
  models.forEach((m,i)=>{
-  m.position.x+=(m.userData.targetX??m.position.x-m.position.x)*.25;
-  m.position.y=m.userData.targetY||0;
-  if(m.userData.crouching)m.scale.y=.72;
-  else m.scale.y=1;
-  const attack=m.userData.attacking;
-  m.userData.arms.forEach(a=>{
-   a.arm.rotation.x=m.userData.blocking?-.8:(attack?Math.sin(t*24)*.8:Math.sin(t*5+i)*.05);
-   a.arm.rotation.z=a.side*(m.userData.blocking?.7:.12);
-   a.fist.position.z=m.userData.blocking?.35:.15;
+  const u=m.userData;
+  m.position.x+=(u.targetX-m.position.x)*Math.min(1,dt*9);
+  const jumping=u.jumping;
+  const jumpHeight=jumping?Math.max(0,Math.sin(t*9))*1.2:0;
+  m.position.y+=(jumpHeight-m.position.y)*Math.min(1,dt*12);
+  m.rotation.y+=(i===0?Math.PI/2:-Math.PI/2)-m.rotation.y;
+  m.scale.y+=(u.crouching?0.72:1)-m.scale.y;
+  const swing=u.attacking?Math.sin(t*28)*.8:Math.sin(t*4)*.035;
+  u.arms.forEach(a=>{
+   a.arm.rotation.z=u.blocking?-a.side*.9:(a.side===1?swing:-swing*.35);
+   a.fist.position.x=a.side*.55+(u.attacking&&a.side===1?.4:0);
+   a.fist.position.y=u.blocking?1.5:1.03;
   });
-  m.userData.legs.forEach((l)=>{
-   l.leg.rotation.x=attack?Math.sin(t*22)*.5:Math.sin(t*5+i)*.04;
-  });
+  u.legs.forEach(l=>{l.leg.rotation.x=jumping?Math.sin(t*8)*.4:0});
  });
- for(let i=particles.length-1;i>=0;i--){
-  const p=particles[i];p.userData.life-=dt*1.7;
-  p.position.addScaledVector(p.userData.v,dt*12);
-  p.scale.setScalar(Math.max(.01,p.userData.life));
-  p.material.opacity=Math.max(0,p.userData.life);
-  if(p.userData.life<=0){scene.remove(p);p.geometry.dispose();p.material.dispose();particles.splice(i,1);}
- }
+ particles=particles.filter(p=>{p.userData.life-=dt*1.8;p.position.add(p.userData.velocity);p.userData.velocity.y-=dt*.3;p.scale.setScalar(Math.max(.01,p.userData.life));if(p.userData.life<=0){scene.remove(p);p.geometry.dispose();p.material.dispose();return false}return true});
  renderer.render(scene,camera);
 }
-
-function sendMove(dx,dy){
- if(socket?.connected){
-  socket.emit("move",{dx,dz:0,jump:dy<-.4,crouch:dy>.45});
- }
-}
-function action(name){
- if(!socket?.connected)return;
- socket.emit("action",name);
- if(name==="punch"||name==="kick"||name==="grab")play(soundFiles.punch,.65);
- if(name==="special")play(soundFiles[selectedCharacter]);
-}
-document.querySelectorAll("[data-action]").forEach(b=>{
- b.addEventListener("pointerdown",e=>{
-  e.preventDefault();action(b.dataset.action);
- });
-});
+let stickPointer=null,moveInput={dx:0,jump:false};
 const area=$("stickArea"),stick=$("stick");
-let pointer=null;
 function moveStick(e){
- if(pointer!==e.pointerId)return;
- const r=area.getBoundingClientRect();
- let dx=(e.clientX-(r.left+r.width/2))/(r.width*.35);
- let dy=(e.clientY-(r.top+r.height/2))/(r.height*.35);
- const len=Math.hypot(dx,dy);
- if(len>1){dx/=len;dy/=len;}
- stick.style.transform=`translate(${dx*35}px,${dy*35}px)`;
- sendMove(dx,dy);
+ const r=area.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;
+ let dx=(e.clientX-cx)/(r.width*.35),dy=(e.clientY-cy)/(r.height*.35);
+ const len=Math.hypot(dx,dy);if(len>1){dx/=len;dy/=len}
+ stick.style.left=(29+dx*22)+"%";stick.style.top=(29+dy*22)+"%";
+ moveInput.dx=Math.abs(dx)<.16?0:dx;
+ moveInput.jump=dy<-.65;
+ sendMove();
 }
-function stopStick(){
- pointer=null;stick.style.transform="translate(0,0)";sendMove(0,0);
-}
-area.addEventListener("pointerdown",e=>{
- e.preventDefault();pointer=e.pointerId;area.setPointerCap
+function stopStick(){stickPointer=null;moveInput={dx:0,jump:false};stick.style.left="29%";stick.style.top="29%";sendMove()}
+function sendMove(){if(socket?.connected)socket.emit("move",moveInput)}
+area.addEventListener("pointerdown",e=>{e.preventDefault();stickPointer=e.pointerId;area.setPointerCapture(e.pointerId);moveStick(e)});
+area.addEventListener("pointermove",e=>{if(stickPointer===e.pointerId)moveStick(e)});
+area.addEventListener("pointerup",e=>{if(stickPointer===e.pointerId)stopStick()});
+area.addEventListener("pointercancel",stopStick);
+document.querySelectorAll("[data-action]").forEach(b=>{
+ const action=b.dataset.action;
+ b.addEventListener("pointerdown",e=>{
+  e.preventDefault();
+  if(!socket?.connected)return;
+  if(action==="release")socket.emit("action","release");
+  else socket.emit("action",action);
+ });
+ if(action==="block"){
+  b.addEventListener("pointerup",()=>socket?.emit("action","release"));
+  b.addEventListener("pointercancel",()=>socket?.emit("action","release"));
+  b.addEventListener("pointerleave",()=>socket?.emit("action","release"));
+ }
+});
+window.addEventListener("keydown",e=>{
+ if(e.repeat||!socket?.connected)return;
+ if(e.key==="ArrowLeft"||e.key==="a")moveInput.dx=-1;
+ if(e.key==="ArrowRight"||e.key==="d")moveInput.dx=1;
+ if(e.key==="ArrowUp"||e.key==="w")moveInput.jump=true;
+ if(e.key===" "){e.preventDefault();socket.emit("action","punch")}
+ if(e.key==="j")socket.emit("action","kick");
+ if(e.key==="k")socket.emit("action","special");
+ if(e.key==="l")socket.emit("action","block");
+ sendMove();
+});
+window.addEventListener("keyup",e=>{
+ if(["ArrowLeft","ArrowRight","a","d"].includes(e.key))moveInput.dx=0;
+ if(["ArrowUp","w"].includes(e.key))moveInput.jump=false;
+ if(e.key==="l")socket?.emit("action","release");
+ sendMove();
+});
+connect();
+</script>
+</body>
+</html>
