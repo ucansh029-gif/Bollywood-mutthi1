@@ -247,6 +247,30 @@ input{
 #gameCanvas.superstar-shaking {
   animation: superstarShake .38s ease;
   }  
+/* FIX START BUTTON CLICK */
+#gameCanvas {
+  pointer-events: none !important;
+}
+
+#battleScreen {
+  pointer-events: auto;
+}
+
+#startScreen,
+#menuScreen {
+  position: relative;
+  z-index: 100 !important;
+  pointer-events: auto !important;
+}
+
+#startScreen button,
+#menuScreen button,
+#startBtn {
+  position: relative !important;
+  z-index: 999 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  }
 </style>
 </head>
 
