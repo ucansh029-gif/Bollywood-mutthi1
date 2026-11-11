@@ -546,16 +546,16 @@ function initialize3D() {
 
   scene.add(new THREE.HemisphereLight(0x9ebcff, 0x17131d, 1.05));
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 1.45);
+  const keyLight = new THREE.DirectionalLight(0xffffff, 1.05);
   keyLight.position.set(-5, 10, 8);
   keyLight.castShadow = true;
   scene.add(keyLight);
 
-  const redLight = new THREE.PointLight(0xff263e, 48, 24);
+  const redLight = new THREE.PointLight(0xff263e, 12, 24);
   redLight.position.set(-7, 5, -2);
   scene.add(redLight);
 
-  const blueLight = new THREE.PointLight(0x268bff, 48, 24);
+  const blueLight = new THREE.PointLight(0x268bff, 12, 24);
   blueLight.position.set(7, 5, -2);
   scene.add(blueLight);
 
