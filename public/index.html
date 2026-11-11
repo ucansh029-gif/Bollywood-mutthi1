@@ -525,8 +525,8 @@ function initialize3D() {
     100
   );
 
-  camera.position.set(0, 7.2, 19);
-  camera.lookAt(0, 2.2, 0);
+  camera.position.set(0, 5.4, 14.5);
+  camera.lookAt(0, 2.0, 0);
 
   renderer = new THREE.WebGLRenderer({
     canvas,
@@ -534,13 +534,13 @@ function initialize3D() {
     alpha: false
   });
 
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.35));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.setSize(canvas.clientWidth, canvas.clientHeight);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.92;
+  renderer.toneMappingExposure = 0.78;
 
   clock = new THREE.Clock();
 
